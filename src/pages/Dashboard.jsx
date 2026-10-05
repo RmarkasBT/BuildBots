@@ -7,6 +7,7 @@ import { colorHex } from '../data/scheduleColors'
 import Badge from '../components/Badge'
 import ContactChip from '../components/ContactChip'
 import ContactModal from '../components/ContactModal'
+import { PRODUCT_NAME } from '../buildbots/constants'
 
 // Layout (job header, Clients/Project Managers add-cards, Past Due/Due
 // Today/Action Items panel, Recent Activity feed, right-rail "updates shared
@@ -25,6 +26,31 @@ export default function Dashboard() {
   return (
     <div className="flex gap-4 p-4">
       <div className="flex-1 space-y-4">
+        {/* Entry point into Buildbots — the only navigation into that
+            full-screen product surface. */}
+        <Link
+          to="/build-bots"
+          className="flex items-center gap-4 rounded-md bg-navy-900 p-4 text-white hover:bg-navy-900/90"
+        >
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-blue text-lg">
+            🤖
+          </span>
+          <span className="flex-1">
+            <span className="flex items-center gap-2">
+              <span className="text-base font-bold">{PRODUCT_NAME}</span>
+              <span className="rounded-sm bg-white/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
+                New
+              </span>
+            </span>
+            <span className="mt-0.5 block text-sm text-white/75">
+              AI employees that anyone can build.
+            </span>
+          </span>
+          <span className="rounded-sm bg-brand-blue px-3 py-1.5 text-sm font-semibold">
+            Open {PRODUCT_NAME}
+          </span>
+        </Link>
+
         <div className="rounded-md border border-gray-15 bg-white p-4">
           <div className="flex items-center gap-2">
             <h1 className="text-lg font-bold text-gray-90">{currentJob.name}</h1>

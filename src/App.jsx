@@ -13,6 +13,7 @@ import SubsVendors from './pages/SubsVendors'
 import ClientContacts from './pages/ClientContacts'
 import Estimate from './pages/Estimate'
 import OutOfScope from './pages/OutOfScope'
+import BuildBots from './pages/BuildBots'
 
 const OUT_OF_SCOPE_ROUTES = [
   ['/lead-opportunities', 'Lead Opportunities'],
@@ -56,6 +57,9 @@ export default function App() {
     <BrowserRouter>
       <JobProvider>
         <Routes>
+          {/* Build Bots is its own full-screen product surface — deliberately
+              outside <Shell> so it renders with no top nav or job sidebar. */}
+          <Route path="/build-bots" element={<BuildBots />} />
           <Route path="/" element={<Shell />}>
             <Route index element={<Dashboard />} />
             <Route path="schedule" element={<Schedule />} />
