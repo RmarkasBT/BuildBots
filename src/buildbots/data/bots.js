@@ -127,7 +127,7 @@ export const bots = [
     status: 'idle',
     unread: 0,
     lastActivity: null,
-    knowledge: ['Buildertrend Sales', 'Your website and Google Business Profile'],
+    knowledge: ['Buildertrend Sales', 'Your website'],
     channels: { sms: true, email: true, social: false },
     entryScenarioId: 'leads-idle',
   },
@@ -199,5 +199,22 @@ export const warrantyBot = {
   entryScenarioId: 'warranty-first',
 }
 
-export const allBots = [...bots, shopForeman, warrantyBot]
+// Created during Flow 6 from the Shop Foreman's first question.
+export const leadsBot = {
+  id: 'lead-followup',
+  name: 'Lead Follow-up',
+  job: 'Watches new leads and follows up until they book an appointment',
+  avatar: 'funnel',
+  works: 'mixed',
+  trust: 'suggest',
+  depth: 'deep',
+  status: 'idle',
+  unread: 0,
+  lastActivity: null,
+  knowledge: ['Buildertrend Sales', 'Google Ads and Meta Ads lead forms', 'Gmail', 'Your website'],
+  channels: { sms: true, email: true, social: false },
+  entryScenarioId: 'leads-first',
+}
+
+export const allBots = [...bots, shopForeman, warrantyBot, leadsBot]
 export const botById = Object.fromEntries(allBots.map((b) => [b.id, b]))

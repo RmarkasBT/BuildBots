@@ -3,6 +3,7 @@
 // lands in the roster and sends its first message.
 import { bot, thinking, approval, awaitUser, scenario } from '../../engine/types'
 import { sopWarrantyResponse } from '../documents'
+import { castellanoEmailApproval } from '../approvals'
 
 const F = 'shop-foreman'
 const W = 'warranty'
@@ -12,7 +13,6 @@ const PREVIEW = { type: 'openLive', mode: 'preview', targetId: F, title: 'New bo
 const LAYERS = [
   { id: 'bt', group: 'bt', label: 'Buildertrend knowledge', detail: '412 articles, always current', on: true, locked: true },
   { id: 'website', group: 'business', label: 'Your website', detail: 'warranty terms, brand voice', on: true },
-  { id: 'gbp', group: 'business', label: 'Google Business Profile', detail: '2 reviews mention slow warranty response', on: false },
   { id: 'derived', group: 'business', label: 'Your last 180 jobs', detail: 'punch lists close in 19 days on average', on: true },
   { id: 'punch-walkthrough', group: 'sop', label: 'Punch List Walkthrough', on: true, status: 'indexed' },
   { id: 'warranty-response', group: 'sop', label: 'Warranty Response', on: true, status: 'thin' },
@@ -27,10 +27,14 @@ export const createBot = scenario('create-bot', 'Flow 3 — Shop Foreman builds 
     delay: 500,
     effects: [{ type: 'draftBot', patch: { knowledge: undefined } }, PREVIEW],
     ...awaitUser([
+      { label: 'Generating leads and following up until they book', goto: 'leads' },
       { label: 'Chasing open warranty and punch items', goto: 'scope' },
       { label: 'Keeping homeowners posted after closeout', goto: 'scope' },
     ]),
   }),
+  // Hands into Flow 6 in its own scenario so the dev drawer can jump there.
+  { author: 'system', kind: 'notice', content: '', label: 'leads', delay: 0, end: true, silent: true,
+    effects: [{ type: 'startScenario', convId: F, scenarioId: 'create-leads-bot' }] },
 
   // 2. Clarifying scope.
   bot(F, 'Warranty and punch. Two open items on Castellano right now, nine and six days old, neither scheduled — so there is work waiting. One question on scope: warranty items after closeout only, or the punch list before closeout too?', {
@@ -211,6 +215,7 @@ export const warrantyFirst = scenario('warranty-first', 'Flow 3 — Warranty Fol
     effects: [
       { type: 'selectConv', convId: W },
       { type: 'botStatus', botId: W, status: 'waiting', unread: 0 },
+      { type: 'pushApproval', approval: castellanoEmailApproval },
     ],
   }),
   approval(W, 'apr-castellano-email', {
@@ -218,7 +223,7 @@ export const warrantyFirst = scenario('warranty-first', 'Flow 3 — Warranty Fol
     awaitApproval: 'apr-castellano-email',
     onDecision: { approve: 'sent', edit: 'sent', skip: 'nosend' },
   }),
-  { author: W, kind: 'sent', label: 'sent', delay: 600, content: {
+  { author: W, kind: 'sent', silent: true, label: 'sent', delay: 600, content: {
     channel: 'email',
     to: 'Rob and Maria Castellano',
     toEmail: 'castellanos@example.com',

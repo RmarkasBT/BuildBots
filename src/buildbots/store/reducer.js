@@ -2,6 +2,7 @@ import { A } from './actions'
 import {
   allBots, rosterIds, catalogIds, crews, seededApprovals, routines,
   businessSources, sopDocuments, connectors, documents,
+  prebuiltSources, businessPrompts,
 } from '../data'
 
 const clone = (v) => JSON.parse(JSON.stringify(v))
@@ -31,6 +32,13 @@ export function initialState() {
       sops: Object.fromEntries(sopDocuments.map((s) => [s.id, { status: s.status }])),
       uploads: [],
       branch: null,
+      // Setup workflow state. `framework` is 'generic' until an SOP manual
+      // is read, then 'filled' — that flip is the point of step 4.
+      prebuilt: Object.fromEntries(prebuiltSources.map((s) => [s.id, s.on])),
+      profile: Object.fromEntries(businessPrompts.map((p) => [p.id, ''])),
+      framework: 'generic',
+      sopManual: null,
+      setupDone: false,
     },
     connectors: Object.fromEntries(connectors.map((c) => [c.id, c.status])),
     documents: clone(documents),
@@ -257,6 +265,20 @@ export function reducer(state, action) {
 
     case A.KNOWLEDGE_SOP:
       return { ...state, knowledge: { ...state.knowledge, sops: { ...state.knowledge.sops, [p.id]: { status: p.status } } } }
+
+    // Setup workflow.
+    case A.SETUP_PREBUILT:
+      return { ...state, knowledge: { ...state.knowledge, prebuilt: { ...state.knowledge.prebuilt, [p.id]: p.on } } }
+
+    case A.SETUP_PROFILE:
+      return { ...state, knowledge: { ...state.knowledge, profile: { ...state.knowledge.profile, ...p.fields } } }
+
+    // status: 'reading' | 'filled'
+    case A.SETUP_SOPS:
+      return { ...state, knowledge: { ...state.knowledge, framework: p.status === 'filled' ? 'filled' : state.knowledge.framework, sopManual: p.manual ?? state.knowledge.sopManual } }
+
+    case A.SETUP_DONE:
+      return { ...state, knowledge: { ...state.knowledge, setupDone: true } }
 
     case A.KNOWLEDGE_BRANCH:
       return { ...state, knowledge: { ...state.knowledge, branch: p.branch } }

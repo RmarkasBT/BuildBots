@@ -11,6 +11,7 @@ import LivePane from './live/LivePane'
 import DevDrawer from './dev/DevDrawer'
 import ApprovalsPanel from './panels/ApprovalsPanel'
 import KnowledgePanel from './panels/KnowledgePanel'
+import KnowledgeSetup from './panels/KnowledgeSetup'
 import ConsultantRequest from './panels/ConsultantRequest'
 import SettingsPanel from './panels/SettingsPanel'
 import ConnectorsGallery from './panels/ConnectorsGallery'
@@ -53,6 +54,7 @@ export default function Workspace({ messageRenderers, liveRenderers, panels: Pan
         <LivePane renderers={liveRenderers} />
         <ApprovalsPanel />
         <KnowledgePanel />
+        <KnowledgeSetup />
         <ConsultantRequest />
         <SettingsPanel />
         <ConnectorsGallery />

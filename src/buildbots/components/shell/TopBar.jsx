@@ -5,6 +5,18 @@ import { useStore, useDispatch } from '../../store/useBuildbots'
 import { selectPendingApprovals, selectUi } from '../../store/selectors'
 import { A } from '../../store/actions'
 
+// Stacked layers — knowledge sits in layers, and it reads nothing like a
+// chat bubble or a book.
+function IconKnowledge({ className }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3 3 7.5 12 12l9-4.5L12 3Z" />
+      <path d="m3 12 9 4.5L21 12" />
+      <path d="m3 16.5 9 4.5 9-4.5" />
+    </svg>
+  )
+}
+
 function IconBell({ className }) {
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -42,9 +54,7 @@ export default function TopBar() {
           onClick={() => dispatch({ type: A.SET_UI, payload: { panel: knowledgeOpen ? null : 'knowledge', panelContext: { global: true } } })}
           className={`flex h-8 items-center gap-2 rounded-sm border px-2.5 text-sm ${knowledgeOpen ? 'border-navy-900 bg-navy-900 text-white' : 'border-gray-20 text-gray-80 hover:bg-gray-5'}`}
         >
-          <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z" /><path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20" /><path d="M8 7h8M8 10.5h6" />
-          </svg>
+          <IconKnowledge className="h-4 w-4" />
           <span>{copy.topBar.knowledge}</span>
         </button>
         <button

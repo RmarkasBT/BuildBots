@@ -27,41 +27,6 @@ export const businessSources = [
     ],
   },
   {
-    id: 'facebook',
-    title: 'Facebook',
-    detail: 'Northaven Homes',
-    status: 'available',
-    crawlSteps: ['Reading 86 posts', 'Pulling finished-job photos', 'Reading comments'],
-    learned: [
-      'Posts about twice a month, mostly finished kitchens',
-      'Homeowners comment on trim carpentry more than anything else',
-      'Three five-star reviews mention the walkthrough process by name',
-    ],
-  },
-  {
-    id: 'instagram',
-    title: 'Instagram',
-    detail: '@northavenhomes',
-    status: 'available',
-    crawlSteps: ['Reading 212 posts', 'Pulling finished-job photos', 'Reading captions'],
-    learned: [
-      'Strongest engagement on exterior reveals',
-      'Caption voice is shorter than the website',
-    ],
-  },
-  {
-    id: 'gbp',
-    title: 'Google Business Profile',
-    detail: '4.9 stars, 61 reviews',
-    status: 'available',
-    crawlSteps: ['Reading 61 reviews', 'Pulling hours and service area', 'Reading Q&A'],
-    learned: [
-      'Reviews mention schedule communication 23 times',
-      'Two reviews mention slow warranty response',
-      'Hours listed: 7am to 5pm weekdays',
-    ],
-  },
-  {
     id: 'upload',
     title: 'Upload documents',
     detail: 'Brochures, past proposals, anything',

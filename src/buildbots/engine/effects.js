@@ -78,7 +78,7 @@ export function applyEffect(store, runner, effect, ctx = {}) {
       if (draft.scheduleKind && draft.scheduleKind !== 'request') {
         d({ type: A.ADD_ROUTINE, payload: { routine: {
           id: `${effect.botId}-routine`, botId: effect.botId,
-          name: draft.scheduleKind === 'schedule' ? 'Morning punch and warranty check' : 'Pick up new punch and warranty items',
+          name: draft.routineName ?? (draft.scheduleKind === 'schedule' ? 'Morning punch and warranty check' : 'Pick up new punch and warranty items'),
           trigger: { kind: draft.scheduleKind, label: draft.scheduleLabel }, lastRun: 'Never',
         } } })
       }

@@ -154,7 +154,7 @@ export const materialTrusses = scenario('material-trusses', 'Flow 2 — Material
   }),
 
   // --- supplier sent ---
-  { author: B, kind: 'sent', label: 'supplier-sent', delay: 600, content: keystoneEmail,
+  { author: B, kind: 'sent', silent: true, label: 'supplier-sent', delay: 600, content: keystoneEmail,
     effects: [{ type: 'botStatus', botId: B, status: 'idle', lastActivity: 'Emailed Keystone dispatch about PO 4471' }] },
   bot(B, 'Sent to Keystone dispatch. I will post the reply here when it comes in.', { delay: 900 }),
 
@@ -177,7 +177,7 @@ export const materialTrusses = scenario('material-trusses', 'Flow 2 — Material
     awaitApproval: 'apr-crumley-pm-text',
     onDecision: { approve: 'pm-sent', edit: 'pm-sent', skip: 'pm-skip' },
   }),
-  { author: B, kind: 'sent', label: 'pm-sent', delay: 600, content: pmText, next: 'reply',
+  { author: B, kind: 'sent', silent: true, label: 'pm-sent', delay: 600, content: pmText, next: 'reply',
     effects: [{ type: 'botStatus', botId: B, status: 'idle', lastActivity: 'Texted Jordan Reyes about the Crumley truss risk' }] },
   bot(B, 'Not sent. Jordan still expects trusses Monday. I will leave that to you.', {
     label: 'pm-skip',

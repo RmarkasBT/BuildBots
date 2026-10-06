@@ -1,6 +1,7 @@
 // Flow 1 — native write with approval. Schedule Analyzer opens having
 // already found something on Hargrove.
 import { bot, thinking, approval, action, awaitUser, scenario } from '../../engine/types'
+import { hargroveShiftApproval } from '../approvals'
 
 const B = 'schedule-analyzer'
 
@@ -18,7 +19,10 @@ export const scheduleConflict = scenario('schedule-conflict', 'Flow 1 — Schedu
   ], { delay: 900 }),
   bot(B, 'Cleanest fix is two working days. Inspection moves to Fri Oct 9, Vega backframe to Mon Oct 12, Allstar to Oct 12 through 15, and Monarch insulation to Oct 16 through 20. Nothing downstream of insulation moves. Here are the moves, and the schedule is open on the right.', {
     delay: 1400,
-    effects: [{ type: 'openLive', mode: 'document', targetId: 'hargrove-schedule', title: 'Hargrove Residence — Schedule' }],
+    effects: [
+      { type: 'openLive', mode: 'document', targetId: 'hargrove-schedule', title: 'Hargrove Residence — Schedule' },
+      { type: 'pushApproval', approval: hargroveShiftApproval },
+    ],
   }),
   approval(B, 'apr-hargrove-shift', {
     delay: 700,
@@ -67,7 +71,7 @@ export const scheduleConflict = scenario('schedule-conflict', 'Flow 1 — Schedu
     ],
   }),
   approval(B, 'apr-vega-shift', { delay: 500, awaitApproval: 'apr-vega-shift', onDecision: { approve: 'sent', edit: 'sent', skip: 'nosend' } }),
-  { author: B, kind: 'sent', label: 'sent', delay: 600, content: {
+  { author: B, kind: 'sent', silent: true, label: 'sent', delay: 600, content: {
     channel: 'sms', to: 'Luis Vega, Vega Framing', toPhone: '(469) 555-0142',
     body: 'Luis, Northaven here. Hargrove backframe and blocking moved from Thu Oct 8 to Mon Oct 12 so the framing inspection lands after plumbing rough-in. Still good for the 12th?',
   }, effects: [{ type: 'botStatus', botId: B, status: 'idle', lastActivity: 'Texted Vega about the Hargrove shift' }] },

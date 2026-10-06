@@ -7,7 +7,7 @@ import { A } from '../../store/actions'
 
 // Email, SMS and social are capabilities bots hold, not bots of their own.
 // Connectors are tiles in three states; "connecting" is a two-second fake.
-const INITIALS = { quickbooks: 'QB', xero: 'X', gmail: 'M', outlook: 'O', gcal: 'C', companycam: 'CC', dropbox: 'D', gdrive: 'G', slack: 'S', zapier: 'Z', facebook: 'f', instagram: 'IG', gbp: 'G', twilio: 'T', mcp: 'MCP' }
+const INITIALS = { quickbooks: 'QB', xero: 'X', gmail: 'M', outlook: 'O', gcal: 'C', 'google-ads': 'GA', 'meta-ads': 'MA', companycam: 'CC', dropbox: 'D', gdrive: 'G', slack: 'S', zapier: 'Z', facebook: 'f', instagram: 'IG', gbp: 'G', twilio: 'T', mcp: 'MCP' }
 
 function Tile({ c, status, onConnect }) {
   const soon = status === 'soon'

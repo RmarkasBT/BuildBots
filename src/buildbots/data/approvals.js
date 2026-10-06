@@ -1,10 +1,12 @@
-// Approval queue, seeded with two items so the bell has a count on first
-// load. Flow 2's approvals are pushed into the queue as the bot drafts them
-// (see scenarios/flow2-material.js), so the bell climbs during the demo.
+// The approval queue starts empty. Every flow pushes its own approval into
+// the queue at the moment the bot drafts it (`pushApproval` effect), so the
+// bell only ever counts drafts the viewer has watched being written.
 // `onDecision` lists the effects applied for each decision. Approvals that
 // lead nowhere feel hollow, so every approve has a visible consequence.
-export const seededApprovals = [
-  {
+export const seededApprovals = []
+
+// Flow 1: Schedule Analyzer's four-trade shift on Hargrove.
+export const hargroveShiftApproval = {
     id: 'apr-hargrove-shift',
     botId: 'schedule-analyzer',
     jobId: 'hargrove',
@@ -29,8 +31,10 @@ export const seededApprovals = [
         { type: 'botStatus', botId: 'schedule-analyzer', status: 'idle', unread: 0 },
       ],
     },
-  },
-  {
+}
+
+// Flow 3: Warranty Follow-up's first homeowner email.
+export const castellanoEmailApproval = {
     id: 'apr-castellano-email',
     botId: 'warranty',
     jobId: 'castellano',
@@ -66,5 +70,4 @@ export const seededApprovals = [
       ],
       skip: [],
     },
-  },
-]
+}

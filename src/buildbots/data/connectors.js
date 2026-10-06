@@ -5,6 +5,8 @@ export const connectors = [
   { id: 'gmail', name: 'Gmail', group: 'Email', status: 'connected' },
   { id: 'outlook', name: 'Outlook', group: 'Email', status: 'available' },
   { id: 'gcal', name: 'Google Calendar', group: 'Calendar', status: 'available' },
+  { id: 'google-ads', name: 'Google Ads Manager', group: 'Advertising', status: 'available' },
+  { id: 'meta-ads', name: 'Meta Ads Manager', group: 'Advertising', status: 'available' },
   { id: 'companycam', name: 'CompanyCam', group: 'Photos', status: 'connected' },
   { id: 'dropbox', name: 'Dropbox', group: 'Files', status: 'available' },
   { id: 'gdrive', name: 'Google Drive', group: 'Files', status: 'available' },

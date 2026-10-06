@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { copy } from '../../../data'
+import { company, copy } from '../../../data'
 import { useStore, useDispatch, useRunner } from '../../../store/useBuildbots'
 import { selectApprovals, selectDoc } from '../../../store/selectors'
 import { A } from '../../../store/actions'
@@ -62,6 +62,12 @@ export function ApprovalBody({ approval, editing, edits, setEdits }) {
   )
 }
 
+// An outbound draft reports its own outcome — the card IS the record of the
+// message, so nothing is emitted afterwards.
+const OUTBOUND_LABEL = { approved: 'outApproved', edited: 'outEdited', skipped: 'outSkipped' }
+const statusLabel = (approval) =>
+  copy.approvals[(approval.draft && OUTBOUND_LABEL[approval.status]) || approval.status]
+
 // Shared by the in-thread card and the approvals panel.
 export function ApprovalDecision({ approval, compact = false }) {
   const dispatch = useDispatch()
@@ -90,7 +96,10 @@ export function ApprovalDecision({ approval, compact = false }) {
         {decided ? (
           <div className={`flex items-center gap-2 text-[12px] font-medium ${approval.status === 'skipped' ? 'text-gray-50' : 'text-success-fg'}`}>
             <span>{approval.status === 'skipped' ? '—' : '✓'}</span>
-            <span>{copy.approvals[approval.status]}</span>
+            <span>{statusLabel(approval)}</span>
+            {approval.draft && approval.status !== 'skipped' && (
+              <span className="ml-auto text-right text-[10.5px] font-normal text-gray-40">{copy.sent.signature(company.name)}</span>
+            )}
           </div>
         ) : (
           <div className="flex items-center gap-1.5">
@@ -121,7 +130,10 @@ export default function ApprovalCard({ message }) {
       <div className={`rounded-md border bg-white ${decided ? 'border-gray-15' : 'border-navy-900/30'}`}>
         <div className="flex items-center gap-2 border-b border-gray-10 px-3 py-2">
           <SourceBadge source={approval.native ? 'buildertrend' : 'browser'} />
-          <span className="text-[12.5px] font-semibold text-gray-90">{approval.title}</span>
+          <span className="min-w-0 flex-1 text-[12.5px] font-semibold text-gray-90">{approval.title}</span>
+          {decided && approval.draft && approval.status !== 'skipped' && (
+            <span className="flex shrink-0 items-center gap-1 text-[11.5px] font-medium text-success-fg"><span>✓</span>{copy.sent.sent}</span>
+          )}
         </div>
         <ApprovalDecision approval={approval} />
       </div>

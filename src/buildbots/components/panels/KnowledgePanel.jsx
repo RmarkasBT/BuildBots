@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Z } from '../../constants'
-import { copy, company, buildertrendKnowledge, businessSources, derivedFromJobs, sopDocuments } from '../../data'
+import { copy, company, buildertrendKnowledge, businessSources, derivedFromJobs, sopDocuments, prebuiltSources, sopGroups, SOP_QUESTIONS, SOP_TOTAL, SOP_POSSIBLE_TOTAL, SOP_COVERED_TOTAL } from '../../data'
 import { useStore, useDispatch } from '../../store/useBuildbots'
 import { selectUi, selectKnowledge, selectBots } from '../../store/selectors'
 import { A } from '../../store/actions'
@@ -127,6 +127,8 @@ function SourceCard({ source, state }) {
   )
 }
 
+const COVER_STYLE = (n) => (n >= 9 ? 'bg-success-bg text-success-fg' : n >= 6 ? 'bg-warning-bg text-warning-fg' : 'bg-danger-bg text-danger-fg')
+
 const SOP_STYLE = { indexed: 'bg-success-bg text-success-fg', thin: 'bg-warning-bg text-warning-fg', missing: 'bg-danger-bg text-danger-fg', indexing: 'bg-info-bg text-info-fg' }
 
 // Fake file picker for SOP uploads. Picking a file adds it as "Indexing",
@@ -163,6 +165,92 @@ function UploadMenu({ onPick }) {
   )
 }
 
+function Chevron({ open }) {
+  return (
+    <svg viewBox="0 0 24 24" className={`h-3.5 w-3.5 shrink-0 text-gray-40 transition-transform ${open ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="m9 6 6 6-6 6" />
+    </svg>
+  )
+}
+
+// One lettered group. Collapsed by default — the seven headers are the map,
+// the 28 processes underneath are detail you open when you want it.
+function SopGroup({ group: g, filled }) {
+  const [open, setOpen] = useState(false)
+  const covered = g.processes.reduce((n, p) => n + p.covered, 0)
+  const of = g.processes.length * SOP_QUESTIONS
+  return (
+    <section className="overflow-hidden rounded-md border border-gray-15 bg-white">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex w-full items-center gap-2 px-2.5 py-2 text-left hover:bg-gray-5"
+      >
+        <Chevron open={open} />
+        <span className="w-3 shrink-0 text-[11px] font-semibold text-gray-40">{g.letter}</span>
+        <span className="min-w-0 flex-1 truncate text-[12.5px] font-semibold text-gray-90">{g.title}</span>
+        <span className="shrink-0 text-[10.5px] tabular-nums text-gray-40">{g.processes.length}</span>
+        {filled ? (
+          <span className={`w-12 shrink-0 rounded-sm px-1 py-0.5 text-center text-[10px] font-semibold tabular-nums ${COVER_STYLE(Math.round((covered / of) * SOP_QUESTIONS))}`}>
+            {covered}/{of}
+          </span>
+        ) : (
+          <span className="w-12 shrink-0 rounded-sm bg-gray-10 px-1 py-0.5 text-center text-[10px] font-semibold tabular-nums text-gray-40">—/{of}</span>
+        )}
+      </button>
+      {open && (
+        <ul className="divide-y divide-gray-10 border-t border-gray-10">
+          {g.processes.map((p) => (
+            <li key={p.id} className="flex items-center gap-2.5 py-1.5 pl-8 pr-2.5">
+              <span className="w-4 shrink-0 text-right text-[10.5px] tabular-nums text-gray-40">{p.n}</span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[12.5px] font-medium leading-[1.3] text-gray-90">{p.title}</span>
+                <span className="block truncate text-[10.5px] leading-[1.4] text-gray-50">
+                  {filled ? (p.detail || `${SOP_QUESTIONS - p.covered} of ${SOP_QUESTIONS} questions still open`) : copy.setup.sopUndefined}
+                </span>
+              </span>
+              <span className={`w-10 shrink-0 rounded-sm px-1 py-0.5 text-center text-[10px] font-semibold tabular-nums ${filled ? COVER_STYLE(p.covered) : 'bg-gray-10 text-gray-40'}`}>
+                {filled ? `${p.covered}/${SOP_QUESTIONS}` : `—/${SOP_QUESTIONS}`}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  )
+}
+
+// Compact view of the 28-process framework. Undefined until an SOP manual is
+// read in setup — that empty state is deliberate, it shows what is missing.
+function FrameworkSummary({ filled, onOpen }) {
+  const s = copy.setup
+  const pct = filled ? Math.round((SOP_COVERED_TOTAL / SOP_POSSIBLE_TOTAL) * 100) : 0
+  return (
+    <div className="mb-2 rounded-md border border-gray-15 bg-white px-3 py-2.5">
+      <div className="flex items-baseline gap-2">
+        <span className="text-[12.5px] font-semibold text-gray-90">{SOP_TOTAL} standard processes</span>
+        <span className="text-[11px] text-gray-50">{filled ? s.answered(SOP_COVERED_TOTAL, SOP_POSSIBLE_TOTAL) : s.sopUndefined}</span>
+        <button onClick={onOpen} className="ml-auto shrink-0 text-[11.5px] text-brand-blue hover:underline">{filled ? 'Review' : 'Define these'}</button>
+      </div>
+      <div className="mt-2 flex gap-1">
+        {sopGroups.map((g) => {
+          const covered = g.processes.reduce((n, p) => n + p.covered, 0)
+          const of = g.processes.length * SOP_QUESTIONS
+          return (
+            <span key={g.id} className="min-w-0 flex-1" title={`${g.letter}. ${g.title}`}>
+              <span className="block h-1.5 overflow-hidden rounded-full bg-gray-10">
+                <span className="block h-full rounded-full bg-success-fg" style={{ width: filled ? `${(covered / of) * 100}%` : 0 }} />
+              </span>
+              <span className="mt-0.5 block truncate text-[10px] text-gray-40">{g.letter}</span>
+            </span>
+          )
+        })}
+      </div>
+      {filled && <div className="mt-1 text-right text-[11px] tabular-nums text-gray-50">{pct}% answered</div>}
+    </div>
+  )
+}
+
 export default function KnowledgePanel() {
   const ui = useStore(selectUi)
   const knowledge = useStore(selectKnowledge)
@@ -177,6 +265,8 @@ export default function KnowledgePanel() {
   const bot = global ? null : bots.byId[ui.activeConvId]
   const close = () => dispatch({ type: A.SET_UI, payload: { panel: null, panelContext: null } })
   const k = copy.knowledge
+  const openSetup = () => dispatch({ type: A.SET_UI, payload: { panel: 'setup', panelContext: null } })
+  const filled = knowledge.framework === 'filled'
 
   const upload = (f) => {
     const id = `upload-${f.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
@@ -186,6 +276,8 @@ export default function KnowledgePanel() {
     }, 2200))
   }
 
+  // Documents the company has actually uploaded or written. The 28 processes
+  // above are the framework; these are the source files behind them.
   const sopRows = [
     ...sopDocuments.map((d) => ({ ...d, status: knowledge.sops[d.id]?.status ?? d.status, live: docs[`sop-${d.id}`] })),
     ...(knowledge.uploads ?? []).map((u) => ({ ...u, gap: u.status === 'indexing' ? k.indexing : null })),
@@ -197,15 +289,36 @@ export default function KnowledgePanel() {
       subtitle={global ? `${company.name} · ${k.globalNote}` : `${bot?.name ?? ''} · ${k.sharedNote}`}
       onClose={close}
     >
-      <Section title={k.bt}>
+      {!knowledge.setupDone && (
+        <button
+          onClick={openSetup}
+          className="mb-4 flex w-full items-center gap-3 rounded-md border border-brand-blue/30 bg-info-bg px-3 py-2.5 text-left hover:border-brand-blue/60"
+        >
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-navy-900 text-white">
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3 3 7.5 12 12l9-4.5L12 3Z" /><path d="m3 12 9 4.5L21 12" /><path d="m3 16.5 9 4.5 9-4.5" /></svg>
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[12.5px] font-semibold text-gray-90">{copy.setup.open}</span>
+            <span className="block text-[11.5px] text-gray-60">{copy.setup.subtitle}</span>
+          </span>
+          <span className="shrink-0 text-[11.5px] font-medium text-brand-blue">Start</span>
+        </button>
+      )}
+
+      <Section title={k.bt} note={`${prebuiltSources.filter((p) => p.locked || knowledge.prebuilt?.[p.id]).length} sources on`}>
         <div className="flex items-center gap-3 rounded-md border border-gray-15 bg-gray-5 px-3 py-2.5">
-          <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-gray-50" fill="none" stroke="currentColor" strokeWidth="2"><rect x="5" y="11" width="14" height="10" rx="1.5" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>
+          <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-gray-50" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3 3 7.5 12 12l9-4.5L12 3Z" /><path d="m3 12 9 4.5L21 12" /><path d="m3 16.5 9 4.5 9-4.5" /></svg>
           <span className="min-w-0 flex-1">
             <span className="block text-[12.5px] font-semibold text-gray-90">{buildertrendKnowledge.title}</span>
             <span className="block text-[11px] text-gray-50">{buildertrendKnowledge.blurb}</span>
           </span>
           <span className="shrink-0 text-[11.5px] tabular-nums text-gray-70">{buildertrendKnowledge.line}</span>
         </div>
+        <ul className="mt-1.5 flex flex-wrap gap-1">
+          {prebuiltSources.filter((p) => !p.locked && knowledge.prebuilt?.[p.id]).map((p) => (
+            <li key={p.id} className="rounded-sm bg-gray-10 px-1.5 py-0.5 text-[10.5px] text-gray-60">{p.title}</li>
+          ))}
+        </ul>
       </Section>
 
       <Section title={k.business} note={k.businessNote}>
@@ -221,26 +334,36 @@ export default function KnowledgePanel() {
       </Section>
 
       <Section title={k.sop} note={k.sopNote} action={<UploadMenu onPick={upload} />}>
-        <ul className="divide-y divide-gray-10 rounded-md border border-gray-15 bg-white">
-          {sopRows.map((d) => (
-            <li key={d.id} className={`flex items-center gap-3 px-3 py-2 text-[12.5px] ${d.status === 'indexing' ? 'bb-msg-in' : ''}`}>
-              <span className="h-5 w-4 shrink-0 rounded-[2px] border border-gray-30" />
-              <span className="min-w-0 flex-1">
-                <span className="block font-medium text-gray-90">{d.title}</span>
-                <span className="block truncate text-[11px] text-gray-50">
-                  {d.status === 'indexed'
-                    ? (d.live ? d.live.written : d.file ? `${d.file} · ${d.pages} pages · ${d.updated}` : `${d.pages} pages · updated ${d.updated}`)
-                    : d.gap}
-                </span>
-              </span>
-              {d.live && (
-                <button onClick={() => { dispatch({ type: A.LIVE_OPEN, payload: { mode: 'document', targetId: d.live.id, title: d.live.title } }); close() }} className="text-[11.5px] text-brand-blue hover:underline">{k.open}</button>
-              )}
-              {d.status === 'indexing' && <span className="h-1.5 w-1.5 rounded-full bg-brand-blue bb-pulse" />}
-              <span className={`shrink-0 rounded-sm px-1.5 py-0.5 text-[10.5px] font-medium capitalize ${SOP_STYLE[d.status]}`}>{d.status}</span>
-            </li>
-          ))}
-        </ul>
+        <FrameworkSummary filled={filled} onOpen={openSetup} />
+        <div className="space-y-1.5">
+          {sopGroups.map((g) => <SopGroup key={g.id} group={g} filled={filled} />)}
+        </div>
+
+        {sopRows.length > 0 && (
+          <>
+            <h4 className="mt-3 mb-1 px-0.5 text-[10.5px] font-semibold uppercase tracking-wide text-gray-50">{k.sources}</h4>
+            <ul className="divide-y divide-gray-10 rounded-md border border-gray-15 bg-white">
+              {sopRows.map((d) => (
+                <li key={d.id} className={`flex items-center gap-3 px-3 py-2 text-[12.5px] ${d.status === 'indexing' ? 'bb-msg-in' : ''}`}>
+                  <span className="h-5 w-4 shrink-0 rounded-[2px] border border-gray-30" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-medium text-gray-90">{d.title}</span>
+                    <span className="block truncate text-[11px] text-gray-50">
+                      {d.status === 'indexed'
+                        ? (d.live ? d.live.written : d.file ? `${d.file} · ${d.pages} pages · ${d.updated}` : `${d.pages} pages · updated ${d.updated}`)
+                        : d.gap}
+                    </span>
+                  </span>
+                  {d.live && (
+                    <button onClick={() => { dispatch({ type: A.LIVE_OPEN, payload: { mode: 'document', targetId: d.live.id, title: d.live.title } }); close() }} className="text-[11.5px] text-brand-blue hover:underline">{k.open}</button>
+                  )}
+                  {d.status === 'indexing' && <span className="h-1.5 w-1.5 rounded-full bg-brand-blue bb-pulse" />}
+                  <span className={`shrink-0 rounded-sm px-1.5 py-0.5 text-[10.5px] font-medium capitalize ${SOP_STYLE[d.status]}`}>{d.status}</span>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
         <p className="mt-2 px-1 text-[11px] text-gray-50">{k.sopHint}</p>
       </Section>
     </PanelShell>

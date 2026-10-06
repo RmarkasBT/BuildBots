@@ -51,7 +51,7 @@ export const bidCoordinator = scenario('bid-coordinator-idle', 'Flow 5 — Bid C
   bot(B, 'No open bid packages. Pike Street Spec is in preconstruction with nothing out to trades yet, and the construction set has not been uploaded here. Drop it in and tell me who should get it.', {
     delay: 600,
     ...awaitUser([
-      { label: 'Upload the Pike Street construction set', send: 'Here is the Pike Street construction set.' },
+      { label: 'Upload the Pike Street construction set', send: 'Here is the 5 Street construction set. Organize the plumbing bids.' },
       { label: 'What is out for bid right now?', goto: 'status' },
     ]),
   }),
@@ -184,6 +184,6 @@ export const bidCoordinator = scenario('bid-coordinator-idle', 'Flow 5 — Bid C
   }),
   bot(B, 'Nothing from me. Three framing bids came back on Pike Street through Bid Leveling, but no plumbing, electrical or HVAC packages have gone out. Upload the set and I will start with whichever trade you name.', {
     label: 'status', delay: 1000,
-    ...awaitUser([{ label: 'Upload the Pike Street construction set', send: 'Here is the Pike Street construction set.', goto: 'upload' }]),
+    ...awaitUser([{ label: 'Upload the Pike Street construction set', send: 'Here is the 5 Street construction set. Organize the plumbing bids.', goto: 'upload' }]),
   }),
 ])
