@@ -23,8 +23,8 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/bu
 
 | ID | Story | Pri |
 | --- | --- | --- |
-| E2-1 | Users connect Gmail, Calendar and Drive from the Connectors gallery. Uses per-user OAuth in APIX with encrypted tokens, kept to the minimum scopes. | P0 |
-| E2-2 | Expose Gmail, Calendar and Drive as APIX endpoints and as shared agent tools, granted per bot. | P0 |
+| E2-1 | Users connect Gmail, Calendar and Drive through the existing Agent Platform `google-3lo` auth provider (live in `btdevelopment`, Internal consent screen, PKCE), so Google holds the tokens, not BTNet. Extend it with the minimum Gmail, Calendar and Drive scopes, the Buildbots agent, Gmail egress (`gmail.googleapis.com`) and the EphPR environment. Buildbots hosts the after-consent page and resumes the conversation. | P0 |
+| E2-2 | Shared BTAgents tools for Gmail, Calendar and Drive that use the user's token from the provider, keyed to the BT user, granted per bot, and enforcing approvals and the recipient allowlist (E5). | P0 |
 | E2-3 | Gmail push notifications so new emails can trigger bots. | P1 |
 
 ## E3: Buildbots backend
@@ -113,5 +113,5 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/bu
 
 - Gemini (the BTAgents default) or Claude on Vertex?
 - Build on the unmerged session-service branches, or store conversations ourselves?
-- Which GCP project owns the Google OAuth client, and where do the demo Google accounts live?
+- The `google-3lo` consent screen is Internal, so demo Google accounts must be `buildertrend.com` accounts. Is that acceptable?
 - Should Bid Coordinator send through BT Bids, Gmail, or both?
