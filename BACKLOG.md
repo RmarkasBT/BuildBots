@@ -101,6 +101,8 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/bu
 
 ## Milestones
 
+**Stay current with BTNet.** At the start and end of every milestone, rebase the Buildbots branch onto BTNet `master`. Pay particular attention to `BTAgents/`, which changes often. After each rebase, re-run the BTAgents checks and the Buildbots evals before continuing.
+
 1. **M0, Buildbots app in BTNet:** E1-1, E1-2, E11-1.
 2. **M1, Material Tracker live:** E2-1, E2-2, E3, E4, E5-1, E5-2, E6-1, E6-2, E10-1, E10-2, E11-2, E11-3.
 3. **M2, Bid Coordinator:** E7.
