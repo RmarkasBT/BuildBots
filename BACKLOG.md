@@ -1,6 +1,6 @@
 # Buildbots prototype backlog (BTNet edition)
 
-Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/buildbots`. It doesn't inherit BT's legacy frontend stack, while the rest of BTNet (login, APIX, data, BTAgents and ephemeral PR environments) runs as usual.
+Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/app/buildbots`. It doesn't inherit BT's legacy frontend stack, while the rest of BTNet (login, APIX, data, BTAgents and ephemeral PR environments) runs as usual.
 
 **Goals**
 - Customer demos run by Buildertrend staff, using demo accounts we own.
@@ -16,7 +16,7 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/bu
 
 | ID | Story | Pri |
 | --- | --- | --- |
-| E1-1 | Add Buildbots to BTNet as a standalone app on React 19, React Router 7, Tailwind 4 and shadcn/ui on Radix, restyled to BT design tokens. Keep it outside the pnpm workspace's React 17 pin, with its own lockfile. Follow the `auth-screens` pattern: its own Vite dev server proxied at `/buildbots`, built and published by the BTNet and EphPR pipelines. | P0 |
+| E1-1 | Add Buildbots to BTNet as a standalone app (`Clients.Buildbots`) on React 19, React Router, Tailwind 4 and shadcn/ui on Radix, restyled to BT design tokens. Keep it outside the pnpm workspace's React 17 pin, with its own lockfile. Serve it at `/app/buildbots` by building it into the main React app's output, so the existing `/app/*` routing serves it with no infra change; Clients.App's dev server proxies it locally. | P0 |
 | E1-2 | Use the signed-in BT session on the same domain to call APIX, gated on the server to staff impersonating a builder. Use BT's design tokens for brand colors and type, not BT's React 17 component libraries. | P0 |
 
 ## E2: Google Workspace connections
@@ -119,3 +119,4 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/bu
 - **Bid Coordinator sending:** Gmail.
 - **Branching:** `Integration/buildbots`, with one epic branch and PR into it per epic.
 - **UI components:** shadcn/ui on Radix.
+- **Work item:** ADO User Story #293894 "BuildBots prototype", referenced by every PR.
