@@ -1,6 +1,6 @@
 # Buildbots prototype backlog (BTNet edition)
 
-Build Buildbots inside **BTNet** as a new `/app/buildbots` route. It shows the Buildbots UX instead of the normal BT shell, while the rest of BTNet (login, APIX, data, BTAgents and ephemeral PR environments) runs as usual.
+Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/buildbots`. It doesn't inherit BT's legacy frontend stack, while the rest of BTNet (login, APIX, data, BTAgents and ephemeral PR environments) runs as usual.
 
 **Goals**
 - Customer demos run by Buildertrend staff, using demo accounts we own.
@@ -16,8 +16,8 @@ Build Buildbots inside **BTNet** as a new `/app/buildbots` route. It shows the B
 
 | ID | Story | Pri |
 | --- | --- | --- |
-| E1-1 | Port the Buildbots UI into `Clients.App/src/buildbots/` and mount it full-screen at `/app/buildbots`, gated to staff impersonating a builder (the same gate as AgentTester). | P0 |
-| E1-2 | Make it run on BTNet's stack: React 17, React Router v5, and the missing Tailwind theme tokens. The UI should look the same as the standalone mockup. | P0 |
+| E1-1 | Add Buildbots to BTNet as a standalone app on React 19, React Router 7, Tailwind 4 and modern UI components. Keep it outside the pnpm workspace's React 17 pin, with its own lockfile. Follow the `auth-screens` pattern: its own Vite dev server proxied at `/buildbots`, built and published by the BTNet and EphPR pipelines. | P0 |
+| E1-2 | Use the signed-in BT session on the same domain to call APIX, gated on the server to staff impersonating a builder. Use BT's design tokens for brand colors and type, not BT's React 17 component libraries. | P0 |
 
 ## E2: Google Workspace connections
 
@@ -31,7 +31,7 @@ Build Buildbots inside **BTNet** as a new `/app/buildbots` route. It shows the B
 
 | ID | Story | Pri |
 | --- | --- | --- |
-| E3-1 | Store bots, conversations, approvals and routines per builder and user, with APIX endpoints and a generated client. | P0 |
+| E3-1 | Store bots, conversations, approvals and routines per builder and user, with APIX endpoints and a typed client. | P0 |
 | E3-2 | Fill APIX gaps the bots need: POs with delivery dates, schedule dependencies, bid packages, and trade partner history. | P0 |
 
 ## E4: Agent runtime and live thread
@@ -101,7 +101,7 @@ Build Buildbots inside **BTNet** as a new `/app/buildbots` route. It shows the B
 
 ## Milestones
 
-1. **M0, UI in BTNet:** E1-1, E1-2, E11-1.
+1. **M0, Buildbots app in BTNet:** E1-1, E1-2, E11-1.
 2. **M1, Material Tracker live:** E2-1, E2-2, E3, E4, E5-1, E5-2, E6-1, E6-2, E10-1, E10-2, E11-2, E11-3.
 3. **M2, Bid Coordinator:** E7.
 4. **M3, Custom bots:** E8-1, E8-2.
