@@ -31,15 +31,15 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/bu
 
 | ID | Story | Pri |
 | --- | --- | --- |
-| E3-1 | Store bots, conversations, approvals and routines per builder and user, with APIX endpoints and a typed client. | P0 |
-| E3-2 | Fill APIX gaps the bots need: POs with delivery dates, schedule dependencies, bid packages, and trade partner history. | P0 |
+| E3-1 | Store bots, approvals and routines per builder and user, with APIX endpoints and a typed client. Conversations live in the agent session service. | P0 |
+| E3-2 | Fill APIX gaps the bots need: POs with delivery dates, schedule dependencies, and trade partner history. | P0 |
 
 ## E4: Agent runtime and live thread
 
 | ID | Story | Pri |
 | --- | --- | --- |
-| E4-1 | A BTAgents agent that runs any bot from its definition: instructions, tools, knowledge and trust mode. | P0 |
-| E4-2 | Stream live agent turns into the Buildbots thread. Tool calls show as action cards and documents open in the live pane. Conversations persist across reloads. | P0 |
+| E4-1 | A BTAgents agent on Gemini (the BTAgents default) that runs any bot from its definition: instructions, tools, knowledge and trust mode. | P0 |
+| E4-2 | Stream live agent turns into the Buildbots thread. Tool calls show as action cards and documents open in the live pane. Conversations persist across reloads through the session-service stack (`NativeAgentSessions`, `AiAgentsManager.Sessions`). Rebase onto it, or wait for it to merge. | P0 |
 | E4-3 | Demo-safe behavior: friendly errors with retry and fast responses. | P0 |
 
 ## E5: Approvals and outbound safety
@@ -64,7 +64,7 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/bu
 | --- | --- | --- |
 | E7-1 | Read an uploaded or Drive-picked plan set and identify the trade's sheets and fixture schedule. | P0 |
 | E7-2 | Rank trade partners from BT history and write a personalized draft for each. | P0 |
-| E7-3 | Send approved bid requests through BT Bids, with Gmail and a Drive link as options, and optionally invite partners to the site walk. | P0 |
+| E7-3 | Send approved bid requests from the user's Gmail with a Drive link to the plan set, and optionally invite partners to the site walk. | P0 |
 
 ## E8: Custom bots (Shop Foreman)
 
@@ -94,14 +94,16 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/bu
 | ID | Story | Pri |
 | --- | --- | --- |
 | E11-1 | A stable EphPR demo environment with the Buildbots agents deployed. | P0 |
-| E11-2 | A fictional demo builder seed plus demo Google accounts holding seeded mail and files. | P0 |
+| E11-2 | A fictional demo builder seed plus demo `buildertrend.com` Google accounts holding seeded mail and files. | P0 |
 | E11-3 | One-click reset of the demo builder, conversations and Google accounts. | P0 |
 
 ---
 
 ## Milestones
 
-**Stay current with BTNet.** At the start and end of every milestone, rebase the Buildbots branch onto BTNet `master`. Pay particular attention to `BTAgents/`, which changes often. After each rebase, re-run the BTAgents checks and the Buildbots evals before continuing.
+**Work on a separate branch.** All Buildbots work in BTNet (UI, agents, APIX and infrastructure changes) happens on a dedicated `feature/buildbots` branch created from `master`, in its own worktree. Nothing is committed or merged to BTNet `master`. Demos run from the branch's EphPR environment, which comes from a draft PR that is never completed.
+
+**Stay current with BTNet.** At the start and end of every milestone, rebase `feature/buildbots` onto BTNet `master`. Pay particular attention to `BTAgents/`, which changes often. After each rebase, re-run the BTAgents checks and the Buildbots evals before continuing.
 
 1. **M0, Buildbots app in BTNet:** E1-1, E1-2, E11-1.
 2. **M1, Material Tracker live:** E2-1, E2-2, E3, E4, E5-1, E5-2, E6-1, E6-2, E10-1, E10-2, E11-2, E11-3.
@@ -109,9 +111,9 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/bu
 4. **M3, Custom bots:** E8-1, E8-2.
 5. **M4, Proactive bots and polish:** E9, E2-3, E5-3, E6-3, E8-3, E10-3.
 
-## Open questions
+## Decisions
 
-- Gemini (the BTAgents default) or Claude on Vertex?
-- Build on the unmerged session-service branches, or store conversations ourselves?
-- The `google-3lo` consent screen is Internal, so demo Google accounts must be `buildertrend.com` accounts. Is that acceptable?
-- Should Bid Coordinator send through BT Bids, Gmail, or both?
+- **Model:** Gemini, the BTAgents default.
+- **Conversations:** built on the session-service stack.
+- **Demo Google accounts:** `buildertrend.com` accounts, as the Internal `google-3lo` consent screen requires.
+- **Bid Coordinator sending:** Gmail.
