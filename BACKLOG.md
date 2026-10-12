@@ -25,8 +25,8 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/ap
 
 | ID | Story | Pri |
 | --- | --- | --- |
-| E2-1 | Users connect Gmail, Calendar and Drive through the existing Agent Platform `google-3lo` auth provider (live in `btdevelopment`, Internal consent screen, PKCE), so Google holds the tokens, not BTNet. Extend it with the minimum Gmail, Calendar and Drive scopes, the Buildbots agent, Gmail egress (`gmail.googleapis.com`) and the EphPR environment. Buildbots hosts the after-consent page and resumes the conversation. | P0 |
-| E2-2 | Shared BTAgents tools for Gmail, Calendar and Drive that use the user's token from the provider, keyed to the BT user, granted per bot, and enforcing approvals and the recipient allowlist (E5). | P0 |
+| E2-1 | Users connect Google in Buildbots with Google's browser sign-in (OAuth client in a sandbox project, Internal consent screen, read-only scopes first). The short-lived access token goes to APIX, which holds it in Redis per user until it expires. No Agent Platform auth provider, no egress or Terraform changes. | P0 |
+| E2-2 | APIX endpoints for Gmail, Calendar and Drive that call Google with the user's token, and BTAgents tools that reach them through `call_apix` with the delegated BT token, granted per bot. Read-only in E2; sending, inviting and sharing arrive with E5's approvals and allowlist, enforced in APIX. | P0 |
 | E2-3 | Gmail push notifications so new emails can trigger bots. | P1 |
 
 ## E3: Buildbots backend
@@ -122,3 +122,4 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/ap
 - **Branching:** `Integration/buildbots`, with one epic branch and PR into it per epic.
 - **UI components:** shadcn/ui on Radix.
 - **Work item:** ADO User Story #293894 "BuildBots prototype", referenced by every PR.
+- **Google access:** browser sign-in token passed to APIX, which calls Google. Chosen because the Agent Platform `google-3lo` route needs infra changes we can't make; 3LO on per-PR environments also needs a callback registered per project.
