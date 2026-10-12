@@ -14,10 +14,12 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/ap
 
 ## E1: UI port and route
 
+**Status: done.** [PR 115545](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115545) into `Integration/buildbots`, verified in its EphPR environment (sign in to BTAdmin, impersonate a builder, open `/app/buildbots`).
+
 | ID | Story | Pri |
 | --- | --- | --- |
 | E1-1 | Add Buildbots to BTNet as a standalone app (`Clients.Buildbots`) on React 19, React Router, Tailwind 4 and shadcn/ui on Radix, restyled to BT design tokens. Keep it outside the pnpm workspace's React 17 pin, with its own lockfile. Serve it at `/app/buildbots` by building it into the main React app's output, so the existing `/app/*` routing serves it with no infra change; Clients.App's dev server proxies it locally. | P0 |
-| E1-2 | Use the signed-in BT session on the same domain to call APIX, gated on the server to staff impersonating a builder. Use BT's design tokens for brand colors and type, not BT's React 17 component libraries. | P0 |
+| E1-2 | Use the signed-in BT session on the same domain to call APIX, gated on the server to staff impersonating a builder (`GET v2/Buildbots/session`, which also returns the impersonated builder's name, shown in the top bar). Use BT's design tokens for brand colors and type, not BT's React 17 component libraries. | P0 |
 
 ## E2: Google Workspace connections
 
@@ -105,7 +107,7 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/ap
 
 **Stay current with BTNet.** At the start and end of every milestone, rebase `Integration/buildbots` onto BTNet `master`, between epics when no epic PR is open (rebasing rewrites the branch, so open epic branches would need rebasing too). Pay particular attention to `BTAgents/`, which changes often. After each rebase, re-run the BTAgents checks and the Buildbots evals before continuing.
 
-1. **M0, Buildbots app in BTNet:** E1-1, E1-2, E11-1.
+1. **M0, Buildbots app in BTNet:** E1-1, E1-2 (done), E11-1.
 2. **M1, Material Tracker live:** E2-1, E2-2, E3, E4, E5-1, E5-2, E6-1, E6-2, E10-1, E10-2, E11-2, E11-3.
 3. **M2, Bid Coordinator:** E7.
 4. **M3, Custom bots:** E8-1, E8-2.
