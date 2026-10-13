@@ -48,7 +48,7 @@ _Updated 2026-10-13. Kept current whenever an epic (E) or milestone (M) finishes
 
 | ID | Story | Pri |
 | --- | --- | --- |
-| E2-1 | Users connect Google in Buildbots with Google's browser sign-in (OAuth client in a sandbox project, Internal consent screen, read-only scopes first). The short-lived access token goes to APIX, which holds it in Redis per user until it expires. No Agent Platform auth provider, no egress or Terraform changes. | P0 |
+| E2-1 | Users connect Google in Buildbots with Google's browser sign-in (OAuth client in a sandbox project, External consent screen in Testing mode with demo test users, read-only scopes first). The short-lived access token goes to APIX, which holds it in Redis per user until it expires. No Agent Platform auth provider, no egress or Terraform changes. | P0 |
 | E2-2 | APIX endpoints for Gmail, Calendar and Drive that call Google with the user's token, and BTAgents tools that reach them through `call_apix` with the delegated BT token, granted per bot. Read-only in E2; sending, inviting and sharing arrive with E5's approvals and allowlist, enforced in APIX. | P0 |
 | E2-3 | Gmail push notifications so new emails can trigger bots. | P1 |
 
@@ -119,7 +119,7 @@ _Updated 2026-10-13. Kept current whenever an epic (E) or milestone (M) finishes
 | ID | Story | Pri |
 | --- | --- | --- |
 | E11-1 | A stable EphPR demo environment with the Buildbots agents deployed. | P0 |
-| E11-2 | A fictional demo builder seed plus demo `buildertrend.com` Google accounts holding seeded mail and files. | P0 |
+| E11-2 | A fictional demo builder seed plus demo `@gmail.com` Google accounts (OAuth test users) holding seeded mail, events and files. | P0 |
 | E11-3 | One-click reset of the demo builder, conversations and Google accounts. | P0 |
 
 ---
@@ -140,7 +140,7 @@ _Updated 2026-10-13. Kept current whenever an epic (E) or milestone (M) finishes
 
 - **Model:** Gemini, the BTAgents default.
 - **Conversations:** built on the session-service stack.
-- **Demo Google accounts:** `buildertrend.com` accounts, as the Internal `google-3lo` consent screen requires.
+- **Demo Google accounts:** demo `@gmail.com` accounts added as test users on the sandbox OAuth client, whose consent screen is External in Testing mode. buildertrend.com Google accounts have no Gmail, Calendar or Drive (company mail is Microsoft 365), so Google refuses every read for them (found in E2 testing, 2026-10-13).
 - **Bid Coordinator sending:** Gmail.
 - **Branching:** `Integration/buildbots`, with one epic branch and PR into it per epic.
 - **UI components:** shadcn/ui on Radix.
