@@ -10,6 +10,27 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/ap
 
 **Out of scope:** the other bots from the mockup (removed from the roster), third-party portal automation, SMS and social channels, mobile layout, and customers' own Google accounts.
 
+## Where we are
+
+_Updated 2026-10-13. Kept current whenever an epic (E) or milestone (M) finishes. Checked = done (PR completed into `Integration/buildbots`); `[~]` = in progress or in review._
+
+**M0: Buildbots app in BTNet** (done, pending PR completion)
+- [x] E1-1, E1-2: Buildbots app at `/app/buildbots`, BT session, staff gate, impersonated builder in the top bar ([PR 115545](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115545), green, waiting to be completed)
+- [ ] E11-1: stable EphPR demo environment
+
+**M1: Material Tracker live** (in progress, in this order)
+1. [~] E2-1, E2-2: Google sign-in, read-only Gmail / Calendar / Drive endpoints, codemode `buildbots` agent ([PR 115622](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115622), in review)
+2. [ ] E4: live agent turns in the Buildbots thread (replaces the scripted chat)
+3. [ ] E6-1, E6-2: Material Tracker as a bot definition on the same agent
+4. [ ] E3: only what M1 needs (bot definitions, APIX gaps for POs and schedule dependencies)
+5. [ ] E5-1, E5-2: approvals and the recipient allowlist
+6. [ ] E10-1, E10-2: untrusted-content handling and evals
+7. [ ] E11-2, E11-3: demo builder seed, demo Google accounts, one-click reset
+
+**M2: Bid Coordinator** - [ ] E7
+**M3: Custom bots** - [ ] E8-1, E8-2
+**M4: Proactive bots and polish** - [ ] E9, E2-3 (deferred from E2), E5-3, E6-3, E8-3, E10-3
+
 ---
 
 ## E1: UI port and route
@@ -22,6 +43,8 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/ap
 | E1-2 | Use the signed-in BT session on the same domain to call APIX, gated on the server to staff impersonating a builder (`GET v2/Buildbots/session`, which also returns the impersonated builder's name, shown in the top bar). Use BT's design tokens for brand colors and type, not BT's React 17 component libraries. | P0 |
 
 ## E2: Google Workspace connections
+
+**Status: in review.** [PR 115622](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115622) into `Integration/buildbots`. E2-3 deferred to M4: Gmail push needs a Pub/Sub topic (infra) and long-lived access the browser token can't give.
 
 | ID | Story | Pri |
 | --- | --- | --- |
@@ -108,7 +131,7 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/ap
 **Stay current with BTNet.** At the start and end of every milestone, rebase `Integration/buildbots` onto BTNet `master`, between epics when no epic PR is open (rebasing rewrites the branch, so open epic branches would need rebasing too). Pay particular attention to `BTAgents/`, which changes often. After each rebase, re-run the BTAgents checks and the Buildbots evals before continuing.
 
 1. **M0, Buildbots app in BTNet:** E1-1, E1-2 (done), E11-1.
-2. **M1, Material Tracker live:** E2-1, E2-2, E3, E4, E5-1, E5-2, E6-1, E6-2, E10-1, E10-2, E11-2, E11-3.
+2. **M1, Material Tracker live:** E2-1, E2-2, E3, E4, E5-1, E5-2, E6-1, E6-2, E10-1, E10-2, E11-2, E11-3. Worked milestone-first in this order: E2, E4, E6-1/E6-2, the M1 parts of E3, E5-1/E5-2, E10-1/E10-2, E11-2/E11-3 (one PR per epic).
 3. **M2, Bid Coordinator:** E7.
 4. **M3, Custom bots:** E8-1, E8-2.
 5. **M4, Proactive bots and polish:** E9, E2-3, E5-3, E6-3, E8-3, E10-3.
@@ -123,3 +146,4 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/ap
 - **UI components:** shadcn/ui on Radix.
 - **Work item:** ADO User Story #293894 "BuildBots prototype", referenced by every PR.
 - **Google access:** browser sign-in token passed to APIX, which calls Google. Chosen because the Agent Platform `google-3lo` route needs infra changes we can't make; 3LO on per-PR environments also needs a callback registered per project.
+- **Work order:** milestone-first. Within a milestone, only its stories, ordered to reach a working demo soonest; one PR per epic.
