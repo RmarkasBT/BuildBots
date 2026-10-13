@@ -14,8 +14,8 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/ap
 
 _Updated 2026-10-13. Kept current whenever an epic (E) or milestone (M) finishes. Checked = done (PR completed into `Integration/buildbots`); `[~]` = in progress or in review._
 
-**M0: Buildbots app in BTNet** (done, pending PR completion)
-- [x] E1-1, E1-2: Buildbots app at `/app/buildbots`, BT session, staff gate, impersonated builder in the top bar ([PR 115545](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115545), green, waiting to be completed)
+**M0: Buildbots app in BTNet** (in progress)
+- [~] E1-1, E1-2: Buildbots app at `/app/buildbots`, BT session, staff gate, impersonated builder in the top bar ([PR 115545](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115545), green, waiting to be completed)
 - [ ] E11-1: stable EphPR demo environment
 
 **M1: Material Tracker live** (in progress, in this order)
