@@ -19,8 +19,8 @@ _Updated 2026-10-13. Kept current whenever an epic (E) or milestone (M) finishes
 - [ ] E11-1: stable EphPR demo environment
 
 **M1: Material Tracker live** (in progress, in this order)
-1. [~] E2-1, E2-2: Google sign-in, read-only Gmail / Calendar / Drive endpoints, codemode `buildbots` agent ([PR 115622](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115622), in review)
-2. [ ] E4: live agent turns in the Buildbots thread (replaces the scripted chat)
+1. [x] E2-1, E2-2: Google sign-in, read-only Gmail / Calendar / Drive endpoints, codemode `buildbots` agent ([PR 115622](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115622), completed 2026-10-13)
+2. [~] E4: live agent turns in the Buildbots thread (replaces the scripted chat)
 3. [ ] E6-1, E6-2: Material Tracker as a bot definition on the same agent
 4. [ ] E3: only what M1 needs (bot definitions, APIX gaps for POs and schedule dependencies)
 5. [ ] E5-1, E5-2: approvals and the recipient allowlist
@@ -44,7 +44,7 @@ _Updated 2026-10-13. Kept current whenever an epic (E) or milestone (M) finishes
 
 ## E2: Google Workspace connections
 
-**Status: in review.** [PR 115622](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115622) into `Integration/buildbots`. E2-3 deferred to M4: Gmail push needs a Pub/Sub topic (infra) and long-lived access the browser token can't give.
+**Status: done, merged into `Integration/buildbots` 2026-10-13.** [PR 115622](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115622), verified in its EphPR: the `buildbots` agent answered from Gmail, Calendar and Drive in AgentTester. Google refusals (an account without Gmail, Calendar or Drive) reach the agent as `googleError` instead of failing the turn. E2-3 deferred to M4: Gmail push needs a Pub/Sub topic (infra) and long-lived access the browser token can't give.
 
 | ID | Story | Pri |
 | --- | --- | --- |
