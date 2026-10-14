@@ -12,7 +12,7 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/ap
 
 ## Where we are
 
-_Updated 2026-10-13. Kept current whenever an epic (E) or milestone (M) finishes. Checked = done (PR completed into `Integration/buildbots`); `[~]` = in progress or in review._
+_Updated 2026-10-14. Kept current whenever an epic (E) or milestone (M) finishes. Checked = done (PR completed into `Integration/buildbots`); `[~]` = in progress or in review._
 
 **M0: Buildbots app in BTNet** (in progress)
 - [x] E1-1, E1-2: Buildbots app at `/app/buildbots`, BT session, staff gate, impersonated builder in the top bar ([PR 115545](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115545), completed 2026-10-13)
@@ -20,11 +20,11 @@ _Updated 2026-10-13. Kept current whenever an epic (E) or milestone (M) finishes
 
 **M1: Material Tracker live** (in progress, in this order)
 1. [x] E2-1, E2-2: Google sign-in, read-only Gmail / Calendar / Drive endpoints, codemode `buildbots` agent ([PR 115622](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115622), completed 2026-10-13)
-2. [~] E4: live agent turns in the Buildbots thread (replaces the scripted chat)
+2. [x] E4: live agent turns in the Buildbots thread, replacing the scripted chat ([PR 115702](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115702), completed 2026-10-14)
 3. [ ] E6-1, E6-2: Material Tracker as a bot definition on the same agent
 4. [ ] E3: only what M1 needs (bot definitions, APIX gaps for POs and schedule dependencies)
 5. [ ] E5-1, E5-2: approvals and the recipient allowlist
-6. [ ] E10-1, E10-2: untrusted-content handling and evals
+6. [~] E10-1, E10-2: untrusted-content handling and evals. First part in review: 15 evals across Gmail, Calendar and Drive ([PR 115879](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115879))
 7. [ ] E11-2, E11-3: demo builder seed, demo Google accounts, one-click reset
 
 **M2: Bid Coordinator** - [ ] E7
@@ -60,6 +60,8 @@ _Updated 2026-10-13. Kept current whenever an epic (E) or milestone (M) finishes
 | E3-2 | Fill APIX gaps the bots need: POs with delivery dates, schedule dependencies, and trade partner history. | P0 |
 
 ## E4: Agent runtime and live thread
+
+**Status: done, merged into `Integration/buildbots` 2026-10-14.** [PR 115702](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115702), verified in its EphPR: replies stream with step cards, cite sources that open in the side pane, and conversations reload. Decision: conversations live in the agent's own Agent Engine sessions (no BTNet store, no infra), listed by owner; the session-service stack (PR 114772) can replace that once it merges. Bots are defined by APIX and their tool grants enforced by the agent. Streaming tokens within a reply is deferred; steps stream as they happen.
 
 | ID | Story | Pri |
 | --- | --- | --- |
