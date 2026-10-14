@@ -21,10 +21,10 @@ _Updated 2026-10-14. Kept current whenever an epic (E) or milestone (M) finishes
 **M1: Material Tracker live** (in progress, in this order)
 1. [x] E2-1, E2-2: Google sign-in, read-only Gmail / Calendar / Drive endpoints, codemode `buildbots` agent ([PR 115622](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115622), completed 2026-10-13)
 2. [x] E4: live agent turns in the Buildbots thread, replacing the scripted chat ([PR 115702](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115702), completed 2026-10-14)
-3. [ ] E6-1, E6-2: Material Tracker as a bot definition on the same agent
+3. [~] E6-1, E6-2: Material Tracker as a bot definition on the same agent, built eval-first: status questions, a per-job materials Sheet, deliveries on the calendar
 4. [ ] E3: only what M1 needs (bot definitions, APIX gaps for POs and schedule dependencies)
 5. [ ] E5-1, E5-2: approvals and the recipient allowlist
-6. [~] E10-1, E10-2: untrusted-content handling and evals. First part in review: 15 evals across Gmail, Calendar and Drive ([PR 115879](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115879))
+6. [~] E10-1, E10-2: untrusted-content handling and evals. 15 evals across Gmail, Calendar and Drive merged ([PR 115879](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115879), completed 2026-10-14); 20 Material Tracker evals arrive with E6
 7. [ ] E11-2, E11-3: demo builder seed, demo Google accounts, one-click reset
 
 **M2: Bid Coordinator** - [ ] E7
