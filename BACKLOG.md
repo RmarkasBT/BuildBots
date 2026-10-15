@@ -12,7 +12,7 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/ap
 
 ## Where we are
 
-_Updated 2026-10-14. Kept current whenever an epic (E) or milestone (M) finishes. Checked = done (PR completed into `Integration/buildbots`); `[~]` = in progress or in review._
+_Updated 2026-10-15. Kept current whenever an epic (E) or milestone (M) finishes. Checked = done (PR completed into `Integration/buildbots`); `[~]` = in progress or in review._
 
 **M0: Buildbots app in BTNet** (in progress)
 - [x] E1-1, E1-2: Buildbots app at `/app/buildbots`, BT session, staff gate, impersonated builder in the top bar ([PR 115545](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115545), completed 2026-10-13)
@@ -21,10 +21,10 @@ _Updated 2026-10-14. Kept current whenever an epic (E) or milestone (M) finishes
 **M1: Material Tracker live** (in progress, in this order)
 1. [x] E2-1, E2-2: Google sign-in, read-only Gmail / Calendar / Drive endpoints, codemode `buildbots` agent ([PR 115622](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115622), completed 2026-10-13)
 2. [x] E4: live agent turns in the Buildbots thread, replacing the scripted chat ([PR 115702](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115702), completed 2026-10-14)
-3. [~] E6-1, E6-2: Material Tracker as a bot definition on the same agent, built eval-first: status questions, a per-job materials Sheet, deliveries on the calendar
+3. [x] E6-1, E6-2: Material Tracker, built eval-first: delivery status answers, a per-job materials Google Sheet, and expected deliveries on the calendar in the builder's time zone ([PR 115893](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115893), completed 2026-10-15)
 4. [ ] E3: only what M1 needs (bot definitions, APIX gaps for POs and schedule dependencies)
 5. [ ] E5-1, E5-2: approvals and the recipient allowlist
-6. [~] E10-1, E10-2: untrusted-content handling and evals. 15 evals across Gmail, Calendar and Drive merged ([PR 115879](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115879), completed 2026-10-14); 20 Material Tracker evals arrive with E6
+6. [~] E10-1, E10-2: untrusted-content handling and evals. 35 evals merged (15 Gmail/Calendar/Drive in [PR 115879](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115879), 20 Material Tracker in [PR 115893](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115893)), including planted-instruction cases and a step budget
 7. [ ] E11-2, E11-3: demo builder seed, demo Google accounts, one-click reset
 
 **M2: Bid Coordinator** - [ ] E7
@@ -78,6 +78,8 @@ _Updated 2026-10-14. Kept current whenever an epic (E) or milestone (M) finishes
 | E5-3 | Trust modes (Suggest and Act) enforced on the server, plus an activity log of executed actions. | P1 |
 
 ## E6: Material Tracker
+
+**Status: done, merged into `Integration/buildbots` 2026-10-15.** [PR 115893](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115893), built eval-first (20 cases before the agent) and verified live in its EphPR against real Gmail, a real Google Sheet and a real calendar event. Decisions: a project is a Buildertrend job; writes happen directly on request (no approval for the user's own Drive and Calendar); one "Materials Status - <job>" Google Sheet per job in a Buildbots-owned Drive folder (the narrow drive.file scope); one calendar event per job and PO at the job site, in the builder's time zone, never with attendees. Follow-ups: Agent Engine cold starts (37-48 s; `min_instances` is not in the deploy path), E6-3 notifications in M4.
 
 | ID | Story | Pri |
 | --- | --- | --- |
