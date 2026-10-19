@@ -12,7 +12,7 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/ap
 
 ## Where we are
 
-_Updated 2026-10-15. Kept current whenever an epic (E) or milestone (M) finishes. Checked = done (PR completed into `Integration/buildbots`); `[~]` = in progress or in review._
+_Updated 2026-10-19. Kept current whenever an epic (E) or milestone (M) finishes. Checked = done (PR completed into `Integration/buildbots`); `[~]` = in progress or in review._
 
 **M0: Buildbots app in BTNet** (in progress)
 - [x] E1-1, E1-2: Buildbots app at `/app/buildbots`, BT session, staff gate, impersonated builder in the top bar ([PR 115545](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115545), completed 2026-10-13)
@@ -22,9 +22,9 @@ _Updated 2026-10-15. Kept current whenever an epic (E) or milestone (M) finishes
 1. [x] E2-1, E2-2: Google sign-in, read-only Gmail / Calendar / Drive endpoints, codemode `buildbots` agent ([PR 115622](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115622), completed 2026-10-13)
 2. [x] E4: live agent turns in the Buildbots thread, replacing the scripted chat ([PR 115702](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115702), completed 2026-10-14)
 3. [x] E6-1, E6-2: Material Tracker, built eval-first: delivery status answers, a per-job materials Google Sheet, and expected deliveries on the calendar in the builder's time zone ([PR 115893](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115893), completed 2026-10-15)
-4. [ ] E3: only what M1 needs (bot definitions, APIX gaps for POs and schedule dependencies)
+4. [~] E3: only what M1 needs. E3-2 POs and schedule in review ([PR 116170](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/116170)): agent-only `jobs/{id}/purchase-orders` and `/schedule` endpoints in the builder's time zone, `list_purchase_orders` / `get_schedule` tools, "Needed by" and "In Buildertrend" sheet columns, late deliveries named with the schedule items they hold up. E3-1 storage deferred: approvals with E5, bot definitions with E8, trade partner history with E7
 5. [ ] E5-1, E5-2: approvals and the recipient allowlist
-6. [~] E10-1, E10-2: untrusted-content handling and evals. 35 evals merged (15 Gmail/Calendar/Drive in [PR 115879](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115879), 20 Material Tracker in [PR 115893](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115893)), including planted-instruction cases and a step budget
+6. [~] E10-1, E10-2: untrusted-content handling and evals. 35 evals merged (15 Gmail/Calendar/Drive in [PR 115879](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115879), 20 Material Tracker in [PR 115893](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115893)), including planted-instruction cases and a step budget; 9 more in review with E3 (POs, schedule impact, a long-lived job with old POs and schedule items)
 7. [ ] E11-2, E11-3: demo builder seed, demo Google accounts, one-click reset
 
 **M2: Bid Coordinator** - [ ] E7
