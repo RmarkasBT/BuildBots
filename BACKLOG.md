@@ -12,7 +12,7 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/ap
 
 ## Where we are
 
-_Updated 2026-10-19. Kept current whenever an epic (E) or milestone (M) finishes. Checked = done (PR completed into `Integration/buildbots`); `[~]` = in progress or in review._
+_Updated 2026-10-20. Kept current whenever an epic (E) or milestone (M) finishes. Checked = done (PR completed into `Integration/buildbots`); `[~]` = in progress or in review._
 
 **M0: Buildbots app in BTNet** (in progress)
 - [x] E1-1, E1-2: Buildbots app at `/app/buildbots`, BT session, staff gate, impersonated builder in the top bar ([PR 115545](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115545), completed 2026-10-13)
@@ -23,8 +23,8 @@ _Updated 2026-10-19. Kept current whenever an epic (E) or milestone (M) finishes
 2. [x] E4: live agent turns in the Buildbots thread, replacing the scripted chat ([PR 115702](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115702), completed 2026-10-14)
 3. [x] E6-1, E6-2: Material Tracker, built eval-first: delivery status answers, a per-job materials Google Sheet, and expected deliveries on the calendar in the builder's time zone ([PR 115893](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115893), completed 2026-10-15)
 4. [x] E3: only what M1 needs. E3-2 POs and schedule ([PR 116170](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/116170)): agent-only `jobs/{id}/purchase-orders` and `/schedule` endpoints in the builder's time zone, `list_purchase_orders` / `get_schedule` tools, "Needed by" and "In Buildertrend" sheet columns, late deliveries named with the schedule items they hold up; completed 2026-10-19. E3-1 storage deferred: approvals with E5, bot definitions with E8, trade partner history with E7
-5. [ ] E5-1, E5-2: approvals and the recipient allowlist
-6. [~] E10-1, E10-2: untrusted-content handling and evals. 35 evals merged (15 Gmail/Calendar/Drive in [PR 115879](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115879), 20 Material Tracker in [PR 115893](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115893)), including planted-instruction cases and a step budget; 10 more merged with E3 in [PR 116170](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/116170) (POs, schedule impact, a long-lived job with old POs and schedule items, a finished PO found by number)
+5. [x] E5-1, E5-2: approvals and the recipient allowlist ([PR 116383](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/116383), completed 2026-10-20): Material Tracker drafts supplier emails (the send half of E6-2), APIX sends only on the user's approval, a per-builder allowlist blocks everything else
+6. [~] E10-1, E10-2: untrusted-content handling and evals. 35 evals merged (15 Gmail/Calendar/Drive in [PR 115879](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115879), 20 Material Tracker in [PR 115893](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115893)), including planted-instruction cases and a step budget; 10 more merged with E3 in [PR 116170](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/116170) (POs, schedule impact, a long-lived job with old POs and schedule items, a finished PO found by number); 8 more merged with E5 in [PR 116383](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/116383) (email drafts: the vendor's own address, a planted redirect, ambiguous requests, the approval outcomes) and an `email_drafts` metric every case is scored on
 7. [ ] E11-2, E11-3: demo builder seed, demo Google accounts, one-click reset
 
 **M2: Bid Coordinator** - [ ] E7
@@ -63,7 +63,7 @@ _Updated 2026-10-19. Kept current whenever an epic (E) or milestone (M) finishes
 
 ## E4: Agent runtime and live thread
 
-**Status: done, merged into `Integration/buildbots` 2026-10-14.** [PR 115702](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115702), verified in its EphPR: replies stream with step cards, cite sources that open in the side pane, and conversations reload. Decision: conversations live in the agent's own Agent Engine sessions (no BTNet store, no infra), listed by owner; the session-service stack (PR 114772) can replace that once it merges. Bots are defined by APIX and their tool grants enforced by the agent. Streaming tokens within a reply is deferred; steps stream as they happen.
+**Status: done, merged into `Integration/buildbots` 2026-10-14.** [PR 115702](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115702), verified in its EphPR: replies stream with step cards, cite sources that open in the side pane, and conversations reload. Decision: conversations live in the agent's own Agent Engine sessions (no BTNet store, no infra), listed by owner; the session-service stack (PR 114772) can replace that once it merges. Done 2026-10-20 in [PR 116508](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/116508): master's APIX agent sessions merged and agents now refuse to create their own, so Buildbots conversations are APIX `AgentSessions` records (BTAdmin run-as, owned by the impersonated builder user), with streaming turns kept. Bots are defined by APIX and their tool grants enforced by the agent. Streaming tokens within a reply is deferred; steps stream as they happen.
 
 | ID | Story | Pri |
 | --- | --- | --- |
@@ -72,6 +72,8 @@ _Updated 2026-10-19. Kept current whenever an epic (E) or milestone (M) finishes
 | E4-3 | Demo-safe behavior: friendly errors with retry and fast responses. | P0 |
 
 ## E5: Approvals and outbound safety
+
+**Status: E5-1 and E5-2 done, merged into `Integration/buildbots` 2026-10-20.** [PR 116383](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/116383), built eval-first and verified live in its EphPR: a drafted reply to the PLS-2081 notice was approved and arrived in the vendor's Gmail thread; an edit to an address off the allowlist came back Blocked and sent nothing. Decisions: the agent only drafts (`draft_email` -> `POST v2/Buildbots/approvals`, idempotent for a repeat); APIX sends from the user's Gmail (`gmail.send`) on a user-only decision route; drafts and the allowlist live in the GCS temp-files bucket under `buildbots/{builderId}/`, drafts expire after 14 days; the allowlist is exact addresses or `@domain`, empty blocks everything; after a decision the UI resumes the conversation with an `[approval] <status>` turn. Email only for M1; invites, shares and bid requests reuse the approval model later. Follow-ups: the new .NET unit tests compiled but have not run (Buildbots PRs don't trigger BTNet-Solution-Tests, which we can't queue); two approves at once could both send (no conditional GCS write); the temp bucket's lifecycle rule is unknown; E5-3 trust modes stay in M4.
 
 | ID | Story | Pri |
 | --- | --- | --- |
