@@ -4,7 +4,7 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/ap
 
 **Goals**
 - Customer demos run by Buildertrend staff, using demo accounts we own.
-- Two starter bots, **Material Tracker** and **Bid Coordinator**, defined the same way as custom bots and run by the same agent.
+- Two starter bots, **Material Tracker** and **Job Scheduling**, defined the same way as custom bots and run by the same agent.
 - **Custom bots** built through the Shop Foreman interview.
 - Every bot can use the user's **Gmail, Google Calendar and Google Drive**.
 
@@ -27,7 +27,7 @@ _Updated 2026-10-20. Kept current whenever an epic (E) or milestone (M) finishes
 6. [x] E10-1, E10-2: untrusted-content handling and evals. 35 evals merged (15 Gmail/Calendar/Drive in [PR 115879](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115879), 20 Material Tracker in [PR 115893](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115893)), including planted-instruction cases and a step budget; 10 more merged with E3 in [PR 116170](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/116170) (POs, schedule impact, a long-lived job with old POs and schedule items, a finished PO found by number); 8 more merged with E5 in [PR 116383](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/116383) (email drafts: the vendor's own address, a planted redirect, ambiguous requests, the approval outcomes) and an `email_drafts` metric every case is scored on; completed 2026-10-21 in [PR 116593](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/116593): a 12-case red-team suite (planted instructions in email bodies, subjects, sender names, Drive docs, PDFs with hidden text, calendar descriptions and zero-width text; none succeeded in the first runs), the bot now flags instructions it ignored, and a staff-only Smoke test panel for pre-demo checks (never sends)
 7. [~] E11-2, E11-3: demo builder seed, demo Google accounts, one-click reset. In review ([PR 116737](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/116737), stacked on E10): the eval fixture exported as the demo dataset; a staff Demo panel seeds three [Demo] jobs with POs and schedule, and puts the vendor emails, events and files into the connected Google account without sending anything (gmail.insert, no guests); Reset removes only demo or Buildbots-tagged data, then seeds again. Live-checked 2026-10-22 in ephpr116737: Reset trashed only the 25 demo emails and sent nothing; fixes from that check are in the PR: the job search drops a "[Demo]" tag (new PR eval case), dates shift by whole weeks, Connectors and the Demo panel show the connected Google account, and Reset refuses an account other than the one seeded. Re-verified 2026-10-23 on the new APIX: Reset trashed only demo emails and sent nothing, dates keep their weekdays (trusses ship Friday Oct 23), the seed recorded john.d.baker.01@gmail.com, Connectors shows the account, and the status answer names what overdue lumber holds up. Still to land: the Demo panel's account line and disabled Reset, blocked by EphPR checkout failures on the shared build agents
 
-**M2: Bid Coordinator** - [ ] E7
+**M2: Job Scheduling** - [ ] E7
 **M3: Custom bots** - [ ] E8-1, E8-2
 **M4: Proactive bots and polish** - [ ] E9, E2-3 (deferred from E2), E5-3, E6-3, E8-3, E10-3
 **M5: SQLite pre-caching** - [ ] E12-1, E12-2, E12-3, E12-4, E12-5
@@ -78,7 +78,7 @@ _Updated 2026-10-20. Kept current whenever an epic (E) or milestone (M) finishes
 
 | ID | Story | Pri |
 | --- | --- | --- |
-| E5-1 | Anything leaving the company (emails, outside invites, Drive shares, bid requests) waits for approval in the approval card and queue, then resumes the conversation. | P0 |
+| E5-1 | Anything leaving the company (emails, outside invites, Drive shares, schedule notices to subs) waits for approval in the approval card and queue, then resumes the conversation. | P0 |
 | E5-2 | A per-builder recipient allowlist, enforced on the server, so demos can only send to addresses we own. | P0 |
 | E5-3 | Trust modes (Suggest and Act) enforced on the server, plus an activity log of executed actions. | P1 |
 
@@ -92,13 +92,17 @@ _Updated 2026-10-20. Kept current whenever an epic (E) or milestone (M) finishes
 | E6-2 | Draft and send an approved reply to the supplier, then handle their answer by offering to update the BT schedule. | P0 |
 | E6-3 | Notify the job's PM about delivery risk. | P1 |
 
-## E7: Bid Coordinator
+## E7: Job Scheduling
+
+**Status: not started; stories are a first draft to confirm before the epic starts.** Replaces the Bid Coordinator (changed 2026-10-23). Builds on E12: the same snapshot already holds every open job's schedule, its predecessors and what each item holds up, and the user's recent email.
 
 | ID | Story | Pri |
 | --- | --- | --- |
-| E7-1 | Read an uploaded or Drive-picked plan set and identify the trade's sheets and fixture schedule. | P0 |
-| E7-2 | Rank trade partners from BT history and write a personalized draft for each. | P0 |
-| E7-3 | Send approved bid requests from the user's Gmail with a Drive link to the plan set, and optionally invite partners to the site walk. | P0 |
+| E7-1 | Look-ahead: what is on each job's schedule in the next one to two weeks, and what is at risk: items whose predecessors aren't done, items with no one assigned, and one sub booked on two jobs the same day. | P0 |
+| E7-2 | Schedule risk from email: match sub and vendor notices (delays, availability, inspections, weather) to schedule items, and say what slips, using the downstream chain. | P0 |
+| E7-3 | Propose a schedule change (move an item, with its followers shifting) as an approval card; nothing in Buildertrend changes until the user approves. | P0 |
+| E7-4 | Draft schedule confirmations and change notices to the subs on affected items, for approval and the allowlist like every outbound email. | P0 |
+| E7-5 | Apply an approved change to the Buildertrend schedule through APIX, with its own permission check and an undo. | P1 |
 
 ## E8: Custom bots (Shop Foreman)
 
@@ -177,7 +181,7 @@ Open questions:
 
 1. **M0, Buildbots app in BTNet:** E1-1, E1-2 (done), E11-1.
 2. **M1, Material Tracker live:** E2-1, E2-2, E3, E4, E5-1, E5-2, E6-1, E6-2, E10-1, E10-2, E11-2, E11-3. Worked milestone-first in this order: E2, E4, E6-1/E6-2, the M1 parts of E3, E5-1/E5-2, E10-1/E10-2, E11-2/E11-3 (one PR per epic).
-3. **M2, Bid Coordinator:** E7.
+3. **M2, Job Scheduling:** E7.
 4. **M3, Custom bots:** E8-1, E8-2.
 5. **M4, Proactive bots and polish:** E9, E2-3, E5-3, E6-3, E8-3, E10-3.
 6. **M5, SQLite pre-caching:** E12-1 to E12-5, in that order (snapshot route, cache, `sql()` tool, UI notice, prompt and evals); one PR.
@@ -187,7 +191,7 @@ Open questions:
 - **Model:** Gemini, the BTAgents default.
 - **Conversations:** built on the session-service stack.
 - **Demo Google accounts:** demo `@gmail.com` accounts added as test users on the sandbox OAuth client, whose consent screen is External in Testing mode. buildertrend.com Google accounts have no Gmail, Calendar or Drive (company mail is Microsoft 365), so Google refuses every read for them (found in E2 testing, 2026-10-13).
-- **Bid Coordinator sending:** Gmail.
+- **Job Scheduling sending:** Gmail, as for Material Tracker.
 - **Branching:** `Integration/buildbots`, with one epic branch and PR into it per epic.
 - **UI components:** shadcn/ui on Radix.
 - **Work item:** ADO User Story #293894 "BuildBots prototype", referenced by every PR.
