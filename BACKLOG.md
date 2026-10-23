@@ -30,6 +30,7 @@ _Updated 2026-10-20. Kept current whenever an epic (E) or milestone (M) finishes
 **M2: Bid Coordinator** - [ ] E7
 **M3: Custom bots** - [ ] E8-1, E8-2
 **M4: Proactive bots and polish** - [ ] E9, E2-3 (deferred from E2), E5-3, E6-3, E8-3, E10-3
+**M5: SQLite pre-caching** - [ ] E12-1, E12-2, E12-3, E12-4, E12-5
 
 ---
 
@@ -136,6 +137,38 @@ _Updated 2026-10-20. Kept current whenever an epic (E) or milestone (M) finishes
 
 ---
 
+## E12: SQLite pre-caching
+
+**Status: not started.** Today Material Tracker fetches as it goes: `list_jobs`, `list_purchase_orders`, `get_schedule` and a Gmail search are separate APIX calls, and a tool result can't be read in the call that fetched it. So a status-and-impact question takes 5 to 8 code steps, about 25 s each when cold, and step budgets are a frequent eval miss. Pre-caching gathers a job's data once and lets the bot answer with SQL joins in one or two steps.
+
+Modeled on the job-match agents in `BTNet-job-match-agent` (`BTAgents/job_match_sql_agent/sql_database.py`, reused by `bill_match_agent`), which run on the same codemode harness:
+- The host supplies all the data up front, and a `sql(query)` tool exposes it as an in-memory SQLite database.
+- Each table is a Pydantic model; its fields are the columns, and the same models write the schema into the instructions.
+- The database is read-only: an authorizer allows only SELECT and reads (no ATTACH, PRAGMA, writes or `load_extension`) and `PRAGMA query_only` is on.
+- A progress handler stops a query after 2 s, and results are capped at 40 rows and 160 characters per cell.
+- Matching helpers are registered as SQL functions: `similarity(a, b)`, `norm(text)` and `digits(text)`.
+- Measured there: rebuilding the database on every `sql()` call cost about 0.4 s per bill; the queries themselves were about 0 s; model round trips (about 2.5 to 3 s each) dominate latency.
+
+Differences for Buildbots:
+- **Build once per job per conversation**, not on every query.
+- **Keep the snapshot between turns** until it expires or a write changes it.
+- **Writes stay as tools:** sheet, calendar and draft writes keep going through the APIX tools.
+- **Show the first build in the UI** (E12-4).
+
+Open questions:
+- Where APIX keeps the snapshot: Redis like the Google connection, or GCS like approvals, keyed by builder, user and job.
+- How long a snapshot lives.
+- Whether email bodies go into the snapshot or stay a live search.
+- How this fits ADK session state, where `app:` and `user:` scopes are unsupported.
+
+| ID | Story | Pri |
+| --- | --- | --- |
+| E12-1 | APIX job snapshot: one agent-callable route returns a job's POs, line items, vendors, schedule items with predecessors, and the job's vendor emails (subject, sender, date, body, PO numbers found), in the builder's time zone. It runs the same access checks as today's routes (staff gate, accessible job) and is listed in `AgentDelegatedTokenPolicyTests`. | P0 |
+| E12-2 | Snapshot cache: APIX keeps the snapshot per builder, user and job, with a short expiry. A write (sheet, calendar, approval), a demo seed or reset, or Disconnect Google clears it, and the response says whether it was built or reused, and when. | P0 |
+| E12-3 | `sql()` tool for Material Tracker: an in-memory read-only SQLite database built once per turn from the snapshot, ported from `sql_database.py` (authorizer, query time limit, row and cell caps, `similarity` / `norm` / `digits`). Tables: `jobs`, `purchase_orders`, `po_lines`, `vendors`, `schedule_items`, `schedule_predecessors`, `emails`, `email_po_mentions`; schema rendered into the prompt from the same models. | P0 |
+| E12-4 | UI notice the first time a job's data is cached: while a conversation's first snapshot for a job builds, the thread shows a status line ("Caching [Demo] Pike Street's purchase orders, schedule and vendor emails - first time only, about N s"). It is replaced by the answer when ready, and isn't shown again while the cache is fresh. A later rebuild after expiry or a write shows a lighter "Refreshing job data" line. Built from a new stream event APIX sends around the snapshot build. | P0 |
+| E12-5 | Prompt and evals: status, impact, matching and sheet cases run on `sql()` with the snapshot; new cases for a cached second turn and a write that clears the cache; step budgets lowered to measure the gain (target: a status-and-impact answer in 2 to 3 steps); latency recorded before and after, like the job-match `LATENCY.md`. | P0 |
+
 ## Milestones
 
 **Work on a separate branch.** All Buildbots work in BTNet (UI, agents, APIX and infrastructure changes) happens on a long-lived `Integration/buildbots` branch created from `master`, in its own worktree. Each epic gets its own branch (for example `buildbots/e1-ui`) and **one PR into `Integration/buildbots`**. BTNet builds an EphPR environment for every PR into an `Integration*` branch, so each epic PR is reviewable and demoable on its own. Nothing is committed, merged or PR'd to BTNet `master`.
@@ -147,6 +180,7 @@ _Updated 2026-10-20. Kept current whenever an epic (E) or milestone (M) finishes
 3. **M2, Bid Coordinator:** E7.
 4. **M3, Custom bots:** E8-1, E8-2.
 5. **M4, Proactive bots and polish:** E9, E2-3, E5-3, E6-3, E8-3, E10-3.
+6. **M5, SQLite pre-caching:** E12-1 to E12-5, in that order (snapshot route, cache, `sql()` tool, UI notice, prompt and evals); one PR.
 
 ## Decisions
 
