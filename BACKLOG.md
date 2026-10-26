@@ -12,11 +12,11 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/ap
 
 ## Where we are
 
-_Updated 2026-10-26. Kept current whenever an epic (E) or milestone (M) finishes. Checked = done (PR completed into `Integration/buildbots`); `[~]` = in progress or in review._
+_Updated 2026-10-26. Kept current whenever an epic (E) or milestone (M) finishes. Checked = done (PR completed into `Integration/buildbots`); `[~]` = in progress or in review; `[-]` = skipped._
 
-**M0: Buildbots app in BTNet** (in progress)
+**M0: Buildbots app in BTNet** (done)
 - [x] E1-1, E1-2: Buildbots app at `/app/buildbots`, BT session, staff gate, impersonated builder in the top bar ([PR 115545](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115545), completed 2026-10-13)
-- [ ] E11-1: stable EphPR demo environment
+- [-] E11-1: stable EphPR demo environment. Skipped 2026-10-26: not needed for now; demos run from the open epic PR's EphPR
 
 **M1: Material Tracker live** (in progress, in this order)
 1. [x] E2-1, E2-2: Google sign-in, read-only Gmail / Calendar / Drive endpoints, codemode `buildbots` agent ([PR 115622](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115622), completed 2026-10-13)
@@ -135,7 +135,7 @@ _Updated 2026-10-26. Kept current whenever an epic (E) or milestone (M) finishes
 
 | ID | Story | Pri |
 | --- | --- | --- |
-| E11-1 | A stable EphPR demo environment with the Buildbots agents deployed. | P0 |
+| E11-1 | A stable EphPR demo environment with the Buildbots agents deployed. Skipped 2026-10-26, not needed for now. | — |
 | E11-2 | A fictional demo builder seed plus demo `@gmail.com` Google accounts (OAuth test users) holding seeded mail, events and files. | P0 |
 | E11-3 | One-click reset of the demo builder, conversations and Google accounts. | P0 |
 
@@ -179,7 +179,7 @@ Open questions:
 
 **Stay current with BTNet.** At the start and end of every milestone, rebase `Integration/buildbots` onto BTNet `master`, between epics when no epic PR is open (rebasing rewrites the branch, so open epic branches would need rebasing too). Pay particular attention to `BTAgents/`, which changes often. After each rebase, re-run the BTAgents checks and the Buildbots evals before continuing.
 
-1. **M0, Buildbots app in BTNet:** E1-1, E1-2 (done), E11-1.
+1. **M0, Buildbots app in BTNet:** E1-1, E1-2 (done); E11-1 skipped.
 2. **M1, Material Tracker live:** E2-1, E2-2, E3, E4, E5-1, E5-2, E6-1, E6-2, E10-1, E10-2, E11-2, E11-3. Worked milestone-first in this order: E2, E4, E6-1/E6-2, the M1 parts of E3, E5-1/E5-2, E10-1/E10-2, E11-2/E11-3 (one PR per epic).
 3. **M2, Job Scheduling:** E7.
 4. **M3, Custom bots:** E8-1, E8-2.
