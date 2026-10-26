@@ -94,15 +94,20 @@ _Updated 2026-10-26. Kept current whenever an epic (E) or milestone (M) finishes
 
 ## E7: Job Scheduling
 
-**Status: not started; stories are a first draft to confirm before the epic starts.** Replaces the Bid Coordinator (changed 2026-10-23). Builds on E12: the same snapshot already holds every open job's schedule, its predecessors and what each item holds up, and the user's recent email.
+**Status: not started.** Replaces the Bid Coordinator (changed 2026-10-23). Reworked 2026-10-26 around the schedule demo in this repo: the look-ahead and every proposed change show as a Gantt chart in the thread, ported from `src/components/GanttChart.jsx`, with the shift worked out by a port of `src/lib/cascade.js` and the change-set model of `server/changeSets.js` (notify assignees, notify linked, request confirmation, undo). Builds on E12: the snapshot already holds every open job's schedule, what each item waits on and holds up, and the user's recent email; Job Scheduling is the second starter bot, run by the same agent with `sql()`, Gmail, Calendar, `draft_email` and a new `propose_schedule_change` tool.
+
+Proposed defaults, to confirm when the epic starts: the user is a superintendent or PM; the bot runs on demand (a daily look-ahead waits for routines, E9); sub notices are Gmail drafts through approval and the allowlist, not Buildertrend's own confirmation requests; weather only as emails mention it (the repo's simulated weather service later, if at all); applying a change in Buildertrend is P1, so the demo stops at the approved proposal and its drafted notices.
 
 | ID | Story | Pri |
 | --- | --- | --- |
-| E7-1 | Look-ahead: what is on each job's schedule in the next one to two weeks, and what is at risk: items whose predecessors aren't done, items with no one assigned, and one sub booked on two jobs the same day. | P0 |
-| E7-2 | Schedule risk from email: match sub and vendor notices (delays, availability, inspections, weather) to schedule items, and say what slips, using the downstream chain. | P0 |
-| E7-3 | Propose a schedule change (move an item, with its followers shifting) as an approval card; nothing in Buildertrend changes until the user approves. | P0 |
-| E7-4 | Draft schedule confirmations and change notices to the subs on affected items, for approval and the allowlist like every outbound email. | P0 |
-| E7-5 | Apply an approved change to the Buildertrend schedule through APIX, with its own permission check and an undo. | P1 |
+| E7-1 | Snapshot extension: each schedule item's assignees (subs and users) and their confirmation status, the builder's workday calendar and exceptions, and baseline dates where the job has a baseline. | P0 |
+| E7-2 | Gantt in Buildbots: port `GanttChart.jsx` as a read-only, compact chart for the thread (bars, links, today line, baseline against current, at-risk and changed items highlighted), and port `cascade.js` and the work calendar to compute a proposed shift. A test compares the port's shift with what Buildertrend's schedule engine does for the same move on the fixture. | P0 |
+| E7-3 | Look-ahead: "what's coming up on Pike Street" (or across jobs) answers with the next two weeks as a Gantt and a short list of risks: items whose predecessors aren't done, items with no one assigned, unconfirmed subs, and a sub booked on two jobs the same day. | P0 |
+| E7-4 | Schedule risk from email: match sub and vendor notices (a delay, a sub out sick, an inspection the city moved) to schedule items and say what slips, through the downstream chain, with the emails cited. | P0 |
+| E7-5 | Propose a change: `propose_schedule_change` turns "move framing to Thursday" (or a delay from E7-4) into an approval card with the Gantt preview: current and proposed bars for the moved item and everything downstream, how many items move, the new finish date, and the change-set options (notify assignees, notify linked, request confirmation). Approve records the decision; nothing in Buildertrend changes yet. | P0 |
+| E7-6 | Draft the notices: for an approved change, draft the confirmation or change notice to each affected sub, through approval and the allowlist like every outbound email. | P0 |
+| E7-7 | Apply in Buildertrend: an approved change is saved through Buildertrend's own schedule engine via APIX, with its permission check, the notification options the card chose (all off by default), and an undo, as the repo's change sets do. | P1 |
+| E7-8 | Evals and demo data: extend the eval fixture and the demo dataset with assignees, a sub double-booked across two jobs, a framing sub's delay email, an inspection the city moved, and an item whose predecessor isn't done; cases for look-ahead, risk from email, proposals (the preview's shift must match the expected one), drafts, and planted instructions in sub emails. | P0 |
 
 ## E8: Custom bots (Shop Foreman)
 
