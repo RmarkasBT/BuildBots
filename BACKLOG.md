@@ -12,7 +12,7 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/ap
 
 ## Where we are
 
-_Updated 2026-10-20. Kept current whenever an epic (E) or milestone (M) finishes. Checked = done (PR completed into `Integration/buildbots`); `[~]` = in progress or in review._
+_Updated 2026-10-26. Kept current whenever an epic (E) or milestone (M) finishes. Checked = done (PR completed into `Integration/buildbots`); `[~]` = in progress or in review._
 
 **M0: Buildbots app in BTNet** (in progress)
 - [x] E1-1, E1-2: Buildbots app at `/app/buildbots`, BT session, staff gate, impersonated builder in the top bar ([PR 115545](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115545), completed 2026-10-13)
@@ -30,7 +30,7 @@ _Updated 2026-10-20. Kept current whenever an epic (E) or milestone (M) finishes
 **M2: Job Scheduling** - [ ] E7
 **M3: Custom bots** - [ ] E8-1, E8-2
 **M4: Proactive bots and polish** - [ ] E9, E2-3 (deferred from E2), E5-3, E6-3, E8-3, E10-3
-**M5: SQLite pre-caching** - [ ] E12-1, E12-2, E12-3, E12-4, E12-5
+**M5: SQLite pre-caching** - [~] E12-1 to E12-5, in review ([PR 117105](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/117105))
 
 ---
 
@@ -143,7 +143,7 @@ _Updated 2026-10-20. Kept current whenever an epic (E) or milestone (M) finishes
 
 ## E12: SQLite pre-caching
 
-**Status: not started.** Today Material Tracker fetches as it goes: `list_jobs`, `list_purchase_orders`, `get_schedule` and a Gmail search are separate APIX calls, and a tool result can't be read in the call that fetched it. So a status-and-impact question takes 5 to 8 code steps, about 25 s each when cold, and step budgets are a frequent eval miss. Pre-caching gathers a job's data once and lets the bot answer with SQL joins in one or two steps.
+**Status: in review, [PR 117105](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/117105); verified live in ephpr117105 on 2026-10-26.** Decisions made at the start: the snapshot covers all of the user's open jobs (the jobs route's list) plus the last 45 days of their email; APIX builds it at turn start; it is stored per user in GCS (temp-files bucket, `buildbots/<builderId>/snapshots/`) for 30 minutes; email lives in the snapshot and `search_gmail` / `read_emails` stay for anything older or cut short; `list_purchase_orders` and `get_schedule` were removed from Material Tracker (`list_jobs` stays as a fallback); step budgets 4, or 6 with a write. Found and fixed while building: Gmail's per-user quota (6,000 units a minute on the OAuth project, raise to 15,000 requested) ran out on the first build after a demo reset, so the snapshot reads at most 150 emails, 4 at a time, retries once on a quota refusal, and never stores a snapshot whose email read failed. A job's orders now have one definition (current materials POs, past ones an email names, emailed orders with no PO). Live: the first-time and refreshing notices show, the cache is reused on the next question, and the Pike Street status-and-impact answer took 3 steps (6 when a busy inbox fills the 150-email snapshot). Not run: the .NET unit tests (only BTNet-Solution-Tests runs them, for PRs into master); pipeline 318's Windows build and code analysis passed. PR evals: 0 failed cases over 3 runs, criteria pass rate 0.954.
 
 Modeled on the job-match agents in `BTNet-job-match-agent` (`BTAgents/job_match_sql_agent/sql_database.py`, reused by `bill_match_agent`), which run on the same codemode harness:
 - The host supplies all the data up front, and a `sql(query)` tool exposes it as an in-memory SQLite database.
