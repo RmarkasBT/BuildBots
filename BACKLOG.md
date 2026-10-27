@@ -28,7 +28,7 @@ _Updated 2026-10-27. Kept current whenever an epic (E) or milestone (M) finishes
 7. [x] E11-2, E11-3: demo builder seed, demo Google accounts, one-click reset. Completed 2026-10-23 ([PR 116737](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/116737), stacked on E10): the eval fixture exported as the demo dataset; a staff Demo panel seeds three [Demo] jobs with POs and schedule, and puts the vendor emails, events and files into the connected Google account without sending anything (gmail.insert, no guests); Reset removes only demo or Buildbots-tagged data, then seeds again. Live-checked 2026-10-22 in ephpr116737: Reset trashed only the 25 demo emails and sent nothing; fixes from that check are in the PR: the job search drops a "[Demo]" tag (new PR eval case), dates shift by whole weeks, Connectors and the Demo panel show the connected Google account, and Reset refuses an account other than the one seeded. Re-verified 2026-10-23 on the new APIX: Reset trashed only demo emails and sent nothing, dates keep their weekdays (trusses ship Friday Oct 23), the seed recorded john.d.baker.01@gmail.com, Connectors shows the account, and the status answer names what overdue lumber holds up. Still to land: the Demo panel's account line and disabled Reset, blocked by EphPR checkout failures on the shared build agents
 
 **M2: Job Scheduling** (P0 done) - [x] E7-1 to E7-6, E7-8 ([PR 117248](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/117248), completed 2026-10-27); [ ] E7-7 (apply in Buildertrend, P1)
-**M3: Custom bots** - [ ] E8-1, E8-2
+**M3: Custom bots** - [~] E8-1, E8-2 in review ([PR 117478](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/117478))
 **M4: Proactive bots and polish** - [ ] E9, E2-3 (deferred from E2), E5-3, E6-3, E8-3, E10-3
 **M5: SQLite pre-caching** (done) - [x] E12-1 to E12-5 ([PR 117105](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/117105), completed 2026-10-26)
 
@@ -110,6 +110,18 @@ Proposed defaults, to confirm when the epic starts: the user is a superintendent
 | E7-8 | Evals and demo data: extend the eval fixture and the demo dataset with assignees, a sub double-booked across two jobs, a framing sub's delay email, an inspection the city moved, and an item whose predecessor isn't done; cases for look-ahead, risk from email, proposals (the preview's shift must match the expected one), drafts, and planted instructions in sub emails. | P0 |
 
 ## E8: Custom bots (Shop Foreman)
+
+**Status: E8-1 and E8-2 in review, [PR 117478](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/117478).** Decided 2026-10-27:
+- The Shop Foreman is a hidden bot of the existing `buildbots` agent, opened by "+ New bot".
+- Custom bots belong to the builder and are visible to all its users, with the creator recorded.
+- Bots run on request only until routines (E9).
+- A bot can be given any of seven abilities (Gmail, Calendar, Drive, Buildertrend, draft emails, materials sheet and deliveries, propose schedule changes). APIX turns them into tool grants; the Foreman never names tools.
+- Suggest and Act mean what they do for the built-in bots.
+- Create runs the bot's first task.
+- The preview is a card in the thread, with the fixed rules shown locked.
+- Reset demo deletes custom bots.
+- Storage is the Buildbots GCS store (`bots/`, `bot-drafts/`).
+- A custom bot's instructions reach the agent marked as the builder's own, below the fixed rules.
 
 | ID | Story | Pri |
 | --- | --- | --- |
