@@ -12,7 +12,7 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/ap
 
 ## Where we are
 
-_Updated 2026-10-27. Kept current whenever an epic (E) or milestone (M) finishes. Checked = done (PR completed into `Integration/buildbots`); `[~]` = in progress or in review; `[-]` = skipped._
+_Updated 2026-10-28. Kept current whenever an epic (E) or milestone (M) finishes. Checked = done (PR completed into `Integration/buildbots`); `[~]` = in progress or in review; `[-]` = skipped._
 
 **M0: Buildbots app in BTNet** (done)
 - [x] E1-1, E1-2: Buildbots app at `/app/buildbots`, BT session, staff gate, impersonated builder in the top bar ([PR 115545](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115545), completed 2026-10-13)
@@ -31,6 +31,7 @@ _Updated 2026-10-27. Kept current whenever an epic (E) or milestone (M) finishes
 **M3: Custom bots** - [~] E8-1, E8-2 in review ([PR 117478](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/117478))
 **M4: Proactive bots and polish** - [ ] E9, E2-3 (deferred from E2), E5-3, E6-3, E8-3, E10-3
 **M5: SQLite pre-caching** (done) - [x] E12-1 to E12-5 ([PR 117105](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/117105), completed 2026-10-26)
+**M6: Buildertrend data for custom bots** (after M3) - [ ] E13-1, E13-2, E13-3, E13-7 (Post-Construction first); then [ ] E13-4, [ ] E13-5, [ ] E13-6; [ ] E13-8 (writes, P1)
 
 ---
 
@@ -190,6 +191,36 @@ Open questions:
 | E12-4 | UI notice the first time a job's data is cached: while a conversation's first snapshot for a job builds, the thread shows a status line ("Caching [Demo] Pike Street's purchase orders, schedule and vendor emails - first time only, about N s"). It is replaced by the answer when ready, and isn't shown again while the cache is fresh. A later rebuild after expiry or a write shows a lighter "Refreshing job data" line. Built from a new stream event APIX sends around the snapshot build. | P0 |
 | E12-5 | Prompt and evals: status, impact, matching and sheet cases run on `sql()` with the snapshot; new cases for a cached second turn and a write that clears the cache; step budgets lowered to measure the gain (target: a status-and-impact answer in 2 to 3 steps); latency recorded before and after, like the job-match `LATENCY.md`. | P0 |
 
+## E13: Buildertrend data for custom bots
+
+**Status: planned 2026-10-28, not started.** Goal: custom bots the Shop Foreman builds can read Buildertrend data across the four stages of a job (Sales, Pre-Construction, Construction, Post-Construction), as safely as the built-in bots.
+
+Decisions (2026-10-28):
+- **One generated contract.** Extend the agent OpenAPI spec BTNet already generates from `[AllowAgentDelegatedToken]` routes (`agents-openapi.json`, typed into `btagents_platform.apix`, enforced by CI and `AgentDelegatedTokenPolicyTests`). Don't hand-write four separate specs.
+- **Agent-shaped routes under `v2/Buildbots/...`** for the prototype, like E3's `jobs/{id}/purchase-orders`: flat records, ids with names, dates in the builder's time zone, capped. They sit beside the existing product controllers (Leads, Estimates, Bids, Selections, Daily Logs, To-dos, RFIs, Change Orders, Bills, Budget, Warranty, Owner Invoices), not on them, so no other team's controller changes. Move them to the product controllers if this ships.
+- **Each route is tagged with its stage and ability** in the contract. The Shop Foreman's ability catalog is generated from those tags, so a new route becomes grantable without changing the Foreman.
+- **Abilities are one per area (option B), 16 in all**, so a bot sees only what its job needs:
+  - Sales: leads; lead activities; lead proposals.
+  - Pre-Construction: estimates; bids; selections.
+  - Construction: jobs and schedules; purchase orders (these two replace today's single "buildertrend" ability); daily logs; to-dos and RFIs; change orders; bills (AP); budget.
+  - Post-Construction: warranty; owner invoices and payments; job financials.
+- **Reads go into the job snapshot (E12)** as more SQLite tables, loaded only for the abilities the bot has, so list questions stay one query. A generic typed `bt_read(operation, params)` tool, limited to the bot's granted operations, covers single records.
+- **APIX enforces the grant**, not only the agent: it resolves the conversation's bot, then its abilities, and refuses operations outside them. Each route also checks the user's own Buildertrend permission for that area, so a bot never sees more than its user can.
+- **Reads first.** Writes come later as approval cards, one kind at a time (the `schedule_change` pattern); applying them follows E7-7.
+- **First stage: Post-Construction**, starting with warranty, to pair with a Warranty Desk custom bot. Then Construction, Pre-Construction and Sales.
+- **Reset demo seeds each stage's data** for the demo jobs (warranty claims first), and the eval fixture gains the same.
+
+| ID | Story | Pri |
+| --- | --- | --- |
+| E13-1 | Contract plumbing: stage and ability tags on agent routes, the ability catalog generated from the contract (16 abilities, ids and labels), the Shop Foreman and `BuildbotsBotsManager` using it, and today's "buildertrend" ability split into "jobs and schedules" and "purchase orders" (existing custom bots migrated). | P0 |
+| E13-2 | APIX-side grant enforcement: a route a custom bot calls checks that the conversation's bot has the route's ability (403 otherwise), plus the user's Buildertrend permission for the area; tests for each refusal; policy test entries. | P0 |
+| E13-3 | Post-Construction reads: warranty claims (status, age, assigned sub, appointments), owner invoices and payments, and job financials, as routes, snapshot tables and `bt_read` operations; prompt guidance; eval cases including a Warranty Desk custom bot. | P0 |
+| E13-4 | Construction reads: daily logs, to-dos and RFIs, change orders, bills, budget against actual; snapshot tables; evals. | P0 |
+| E13-5 | Pre-Construction reads: estimates, bids (bid packages and each sub's status), selections; snapshot tables; evals. | P0 |
+| E13-6 | Sales reads: leads, lead activities, lead proposals; snapshot tables; evals. | P0 |
+| E13-7 | Demo and eval data per stage: Reset demo seeds warranty claims (then daily logs, bids, leads) for the demo jobs; the eval fixture gains the same; untrusted-content cases for text in those records (warranty notes, log notes). | P0 |
+| E13-8 | Writes as approval cards, one kind at a time by demand (for example a warranty appointment, a daily log draft, a lead follow-up activity); applying them follows E7-7. | P1 |
+
 ## Milestones
 
 **Work on a separate branch.** All Buildbots work in BTNet (UI, agents, APIX and infrastructure changes) happens on a long-lived `Integration/buildbots` branch created from `master`, in its own worktree. Each epic gets its own branch (for example `buildbots/e1-ui`) and **one PR into `Integration/buildbots`**. BTNet builds an EphPR environment for every PR into an `Integration*` branch, so each epic PR is reviewable and demoable on its own. Nothing is committed, merged or PR'd to BTNet `master`.
@@ -202,6 +233,7 @@ Open questions:
 4. **M3, Custom bots:** E8-1, E8-2.
 5. **M4, Proactive bots and polish:** E9, E2-3, E5-3, E6-3, E8-3, E10-3.
 6. **M5, SQLite pre-caching:** E12-1 to E12-5, in that order (snapshot route, cache, `sql()` tool, UI notice, prompt and evals); one PR.
+7. **M6, Buildertrend data for custom bots:** E13-1, E13-2, E13-3 and E13-7 first (the plumbing and Post-Construction, one PR); then Construction (E13-4), Pre-Construction (E13-5) and Sales (E13-6), one PR each; writes (E13-8) by demand.
 
 ## Decisions
 
