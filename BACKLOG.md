@@ -12,7 +12,7 @@ Build Buildbots inside **BTNet** as a standalone, modern frontend served at `/ap
 
 ## Where we are
 
-_Updated 2026-10-29. Kept current whenever an epic (E) or milestone (M) finishes. Checked = done (PR completed into `Integration/buildbots`); `[~]` = in progress or in review; `[-]` = skipped._
+_Updated 2026-10-30. Kept current whenever an epic (E) or milestone (M) finishes. Checked = done (PR completed into `Integration/buildbots`); `[~]` = in progress or in review; `[-]` = skipped._
 
 **M0: Buildbots app in BTNet** (done)
 - [x] E1-1, E1-2: Buildbots app at `/app/buildbots`, BT session, staff gate, impersonated builder in the top bar ([PR 115545](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/115545), completed 2026-10-13)
@@ -31,7 +31,7 @@ _Updated 2026-10-29. Kept current whenever an epic (E) or milestone (M) finishes
 **M3: Custom bots** (done) - [x] E8-1, E8-2 ([PR 117478](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/117478), completed 2026-10-28)
 **M4: Proactive bots and polish** - [ ] E9, E2-3 (deferred from E2), E5-3, E6-3, E8-3, E10-3
 **M5: SQLite pre-caching** (done) - [x] E12-1 to E12-5 ([PR 117105](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/117105), completed 2026-10-26)
-**M6: Buildertrend data for custom bots** (in progress) - [~] E13-1, E13-2, E13-3, E13-7 (Post-Construction first; in review in [PR 117644](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/117644): ability catalog with per-route grants enforced by APIX, warranty and owner invoice snapshot tables, job financials, Cedar Lane demo job; PR evals 3 runs, 0 failed of 49); then [ ] E13-4, [ ] E13-5, [ ] E13-6; [ ] E13-8 (writes, P1)
+**M6: Buildertrend data for custom bots** (in progress) - [x] E13-1, E13-2, E13-3, E13-7 (Post-Construction first; completed 2026-10-30 in [PR 117644](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/117644): ability catalog with per-route grants enforced by APIX, warranty and owner invoice snapshot tables, job financials, Cedar Lane demo job; PR evals 3 runs, 0 failed of 49); then [~] E13-4 (Construction: daily logs, to-dos and RFIs, change orders, bills, budget; in review in [PR 117983](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/117983)), [ ] E13-5, [ ] E13-6; [ ] E13-8 (writes, P1)
 
 ---
 
@@ -193,7 +193,7 @@ Open questions:
 
 ## E13: Buildertrend data for custom bots
 
-**Status: planned 2026-10-28, not started.** Goal: custom bots the Shop Foreman builds can read Buildertrend data across the four stages of a job (Sales, Pre-Construction, Construction, Post-Construction), as safely as the built-in bots.
+**Status: E13-1/2/3/7 done ([PR 117644](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/117644), completed 2026-10-30); E13-4 in review ([PR 117983](https://dev.azure.com/buildertrend/BuildertrendProjects/_git/BTNet/pullrequest/117983)).** Goal: custom bots the Shop Foreman builds can read Buildertrend data across the four stages of a job (Sales, Pre-Construction, Construction, Post-Construction), as safely as the built-in bots.
 
 Decisions (2026-10-28):
 - **One generated contract.** Extend the agent OpenAPI spec BTNet already generates from `[AllowAgentDelegatedToken]` routes (`agents-openapi.json`, typed into `btagents_platform.apix`, enforced by CI and `AgentDelegatedTokenPolicyTests`). Don't hand-write four separate specs.
